@@ -11,5 +11,5 @@ El traductor recibe un programa escrito en GCL y devuelve su semántica. Al reci
 
 ### Autores
 
-- Eros Cedeño (16-10216@usb.ve)
+- Eros Cedeño (16-10216@usb.ve) (eycer1@gmail.com)
 - Kenny Rojas (18-10595@usb.ve)
