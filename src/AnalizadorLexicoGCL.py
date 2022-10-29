@@ -1,4 +1,5 @@
 import ply.lex as lex
+import re
 class AnalizadorLexicoGCL:
     """
     Al instanciarse la clase se ejecuta el 
@@ -23,25 +24,27 @@ class AnalizadorLexicoGCL:
     luego almacena los resultados obtenidos en el diccionario
     self.respuesta segun el formato indicado
     """
-    def lexer():
-        tokens = [
-            # Tokens de Palabras Reservadas
-            'TkDeclare',
-            'TkIf',
-            'TkFi',
-            'TkFor',
-            'TkRof',
-            'TkDo',
-            'TkOd',
-            'TkSkip',
-            'TkPrint',
+    def lexer(self):
+        # palabras reservadas
+        reservadas = {
+            'declare' : 'TkDeclare',
+            'if' : 'TkIf',
+            'fi' : 'TkFi',
+            'for' : 'TkFor',
+            'rof' : 'TkRof',
+            'do' : 'TkDo',
+            'od' : 'TkOd',
+            'skip' : 'TkSkip',
+            'print' : 'TkPrint',
+            'true' : 'TkTrue',
+            'false' : 'TkFalse'
+        }
 
+        tokens = [
             # Tokens de Tipos
             'TkId',
             'TkNum',
             'TkString',
-            'TkTrue',
-            'TkFalse',
             
             # Tokens de Simbolos separadores
             'TkOBlock',
@@ -53,6 +56,7 @@ class AnalizadorLexicoGCL:
             'TkAsig',
             'TkSemicolon',
             'TkArrow',
+            'TkGuard', # Se agrego hace poco al enunciado de la etapa 1
 
             # Tokens de Simbolos de operadores
             'TkPlus',
@@ -74,56 +78,80 @@ class AnalizadorLexicoGCL:
 
             # Tokens de Signos a ignorar
             'TkComment',
+            'TkNewLine',
+            'TkSpace'
         ]
-        # Definicion de las expresiones regulares de los tokens
-        t_TkDeclare = r''
-        t_TkIf = r''
-        t_TkFi = r''
-        t_TkFor = r''
-        t_TkRof = r''
-        t_TkDo = r''
-        t_TkOd = r''
-        t_TkSkip = r''
-        t_TkPrint = r''
-        t_TkId = r''
-        t_TkNum = r''
-        t_TkString = r''
-        t_TkTrue = r''
-        t_TkFalse = r''
 
-        t_TkOBlock = r''
-        t_TkCBlock = r''
-        t_TkSoForth = r''
-        t_TkComma = r''
-        t_TkOpenPar = r''
-        t_TkClosePar = r''
-        t_TkAsig = r''
-        t_TkSemicolon = r''
-        t_TkArrow = r''
+        tokens = tokens + list(reservadas.values())
 
-        t_TkPlus = r''
-        t_TkMinus = r''
-        t_TkMult = r''
-        t_TkOr = r''
-        t_TkAnd = r''
-        t_TkNot = r''
-        t_TkLess = r''
-        t_TkLeq = r''
-        t_TkGeq = r''
-        t_TkGreater = r''
-        t_TkEqual = r''
-        t_TkNEqual = r''
-        t_TkOBracket = r''
-        t_TkCBracket = r''
-        t_TkTwoPoints = r''
-        t_TkConcat = r''
+        # # Definicion de las expresiones regulares de los tokens
 
-        t_ignore_TkComment = r''
+        t_TkNum = r'\d' # No estoy seguro si seria asi 
+        #t_TkString = r'' # no hay que detectar strings (?)
+        t_TkTrue = r'true'
+        t_TkFalse = r'false'
 
-        #Definicion de reglas sobre los tokens
-        pass
+        t_TkOBlock = r'\|\['
+        t_TkCBlock = r'\]\|'
+        t_TkSoForth = r'\.\.'
+        t_TkComma = r','
+        t_TkOpenPar = r'\('
+        t_TkClosePar = r'\)'
+        t_TkAsig = r':='
+        t_TkSemicolon = r';'
+        t_TkArrow = r'-->'
         
 
+        t_TkPlus = r'\+'
+        t_TkMinus = r'-'
+        t_TkMult = r'\*'
+        t_TkOr = r'\\/'
+        t_TkAnd = r'/\\'
+        t_TkNot = r'!'
+        t_TkLess = r'<'
+        t_TkLeq = r'<='
+        t_TkGeq = r'>='
+        t_TkGreater = r'>'
+        t_TkEqual = r'='
+        t_TkNEqual = r'!='
+        t_TkOBracket = r'\['
+        t_TkCBracket = r'\]'
+        t_TkTwoPoints = r':'
+        t_TkConcat = r'\.'
+
+        t_ignore_TkComment = r'//'
+        t_ignore_TkNewLine = r'\n'
+        #t_ignore_TkSpace = r' '
+
+        # podemos ahorrarnos todos los ignore anteriores si hacemos
+        # T_ignore = r '//| |\n'
+
+        #Definicion de reglas sobre los tokens
+        
+        # regla para verificar si el Id no es una palabra reservada
+        def t_TkId(t): # por algun motivo extraño no funciona bien
+            r'[a-zA-z_][a-zA-z_0-9]*'
+            t.type = reservadas.get(t.value, 'TkId')
+            return t
+
+        # manejador de errores del lexer
+        def t_error(e):
+            print("Error con el caracter '%s'" % e.value[0])
+            e.lexer.skip(1)
+
+        
+        # Inicializacion del lexer
+        analizador_lexer = lex.lex()
+        
+        # solo para comprobar la salida
+        for line in self.archivo:
+            analizador_lexer.input(line)
+            while True:
+                token = analizador_lexer.token()
+                if not token:
+                    break
+                else:
+                    print(token)
 
 
     """
