@@ -1,3 +1,4 @@
+import string
 import ply.lex as lex
 import re
 class AnalizadorLexicoGCL:
@@ -10,12 +11,9 @@ class AnalizadorLexicoGCL:
     def __init__(self, nombre_archivo):
         self.archivo = open(nombre_archivo)
         
-        self.respuesta = {
-            'estatus' : -1,
-            'errores': [],
-            'resultado': '',
-        }
-        self.lexer()
+        self.tokens = []
+        lexer = self.lexer()
+        self.analizarArchivo(lexer)
         self.archivo.close()
     
     """
@@ -38,8 +36,8 @@ class AnalizadorLexicoGCL:
             'print' : 'TkPrint',
             'true' : 'TkTrue',
             'false' : 'TkFalse',
-            't_TkTrue' : 'true',
-            't_TkFalse' : 'false'
+            'int' : 'TkInt',
+            'array' : 'TkArray',
         }
 
         tokens = [
@@ -131,7 +129,7 @@ class AnalizadorLexicoGCL:
         # Definicion de reglas sobre los tokens
         
         # Regla para verificar si el Id no es una palabra reservada
-        def t_TkId(t): # por algun motivo extraño no funciona bien
+        def t_TkId(t):
             r'[a-zA-Z_][a-zA-z_0-9]*'
             t.type = reservadas.get(t.value, 'TkId')
             return t
@@ -144,41 +142,28 @@ class AnalizadorLexicoGCL:
         
         # Inicializacion del lexer
         analizador_lexer = lex.lex()
-        
-        # solo para comprobar la salida
+        return analizador_lexer
+
+    def analizarArchivo(self, lexer):
+        # Se almacenan los Tokens
+        linea = 1
         for line in self.archivo:
-            analizador_lexer.input(line)
+            lexer.input(line)
             while True:
-                token = analizador_lexer.token()
+                token = lexer.token()
                 if not token:
                     break
                 else:
-                    print(token)
+                    token_formato = self.formatearToken(token, linea)
+                    self.tokens.append(token_formato)
+            linea += 1
 
+    def obtenerTokens(self):
+        return self.tokens
 
-    """
-    Lista de estatus de la respuesta:
-    0: Analisis Exitoso
-        Errores es una lista vacia
-        Resultado contiene el string del analisis
-        
-    1: Analisis Fallido por error en sintaxis
-        Errores Almacenados en respuesta['errores']
-        Resultado indica que exite error de sintaxis
-
-    2: Archivo no encontrado
-        Errores es una lista vacia
-        Resultado indica que no se encontro el archivo
-
-    3: Archivo no admitido (Extension invalida)
-        Errores es una lista vacia
-        Resultado indica que el archivo no es valido
-    """
-    def obtenerResultado(self) -> str:
-        pass
-    def obtenerEstatus(self) -> int:
-        pass
-
+    def imprimirTokens(self):
+        for token in self.tokens:
+            print(token)
     
     def obtenerErrores(self) -> tuple:
         errores_str = ''
@@ -186,6 +171,10 @@ class AnalizadorLexicoGCL:
         # lista de strings de errores
         return ( errores_str, self.respuesta['errores'] )
 
-
-
-
+    # Dado un token y su linea en el archivo se almacena el
+    # token en el formato solicitado
+    def formatearToken(self, token, linea) -> string:
+        argumentable = [ 'TkId', 'TkString', 'TkNum' ]
+        if (token.type in argumentable):
+            return '{}(\'{}\') {} {}'.format(token.type, token.value, linea, token.lexpos+1)
+        return str(token.type) + ' ' +str(linea) + ' '+str(token.lexpos+1)
