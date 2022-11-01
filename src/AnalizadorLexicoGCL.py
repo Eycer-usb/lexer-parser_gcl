@@ -37,7 +37,9 @@ class AnalizadorLexicoGCL:
             'skip' : 'TkSkip',
             'print' : 'TkPrint',
             'true' : 'TkTrue',
-            'false' : 'TkFalse'
+            'false' : 'TkFalse',
+            't_TkTrue' : 'true',
+            't_TkFalse' : 'false'
         }
 
         tokens = [
@@ -56,7 +58,7 @@ class AnalizadorLexicoGCL:
             'TkAsig',
             'TkSemicolon',
             'TkArrow',
-            'TkGuard', # Se agrego hace poco al enunciado de la etapa 1
+            'TkGuard',
 
             # Tokens de Simbolos de operadores
             'TkPlus',
@@ -84,12 +86,10 @@ class AnalizadorLexicoGCL:
 
         tokens = tokens + list(reservadas.values())
 
-        # # Definicion de las expresiones regulares de los tokens
+        # Definicion de las expresiones regulares de los tokens
 
-        t_TkNum = r'\d' # No estoy seguro si seria asi 
-        #t_TkString = r'' # no hay que detectar strings (?)
-        t_TkTrue = r'true'
-        t_TkFalse = r'false'
+        t_TkNum = r'\d+'
+        t_TkString = r'\w+'
 
         t_TkOBlock = r'\|\['
         t_TkCBlock = r'\]\|'
@@ -119,18 +119,20 @@ class AnalizadorLexicoGCL:
         t_TkTwoPoints = r':'
         t_TkConcat = r'\.'
 
-        t_ignore_TkComment = r'//'
+        t_ignore_TkComment = r'//.*'
         t_ignore_TkNewLine = r'\n'
-        #t_ignore_TkSpace = r' '
+        t_ignore_TkSpace = r'\ '
 
-        # podemos ahorrarnos todos los ignore anteriores si hacemos
+        # Kenny: podemos ahorrarnos todos los ignore anteriores si hacemos
+        # Eros: Si podemos, pero si los tenemos por separado podriamos saber especificamente
+        # que estamos ignorando XD
         # T_ignore = r '//| |\n'
 
-        #Definicion de reglas sobre los tokens
+        # Definicion de reglas sobre los tokens
         
-        # regla para verificar si el Id no es una palabra reservada
+        # Regla para verificar si el Id no es una palabra reservada
         def t_TkId(t): # por algun motivo extraño no funciona bien
-            r'[a-zA-z_][a-zA-z_0-9]*'
+            r'[a-zA-Z_][a-zA-z_0-9]*'
             t.type = reservadas.get(t.value, 'TkId')
             return t
 
