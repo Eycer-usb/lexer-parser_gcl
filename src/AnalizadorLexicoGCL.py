@@ -89,7 +89,7 @@ class AnalizadorLexicoGCL:
         # Definicion de las expresiones regulares de los tokens
 
         t_TkNum = r'\d+'
-        t_TkString = r'\w+'
+        t_TkString = r'[\'\"]\w+[\'\"]'
 
         t_TkOBlock = r'\|\['
         t_TkCBlock = r'\]\|'
