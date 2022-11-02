@@ -4,7 +4,6 @@ import sys
 
 def main():
     if(sys.argv[1] != None):
-        #print ("Abriendo el archivo " + sys.argv[1])
         lexer = AnalizadorLexicoGCL(sys.argv[1])
         if lexer.respuesta["estatus"] == 0:
             lexer.imprimirTokens()
