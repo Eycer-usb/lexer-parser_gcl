@@ -55,7 +55,9 @@ class AnalizadorLexicoGCL:
             'false' : 'TkFalse',
             'int' : 'TkInt',
             'array' : 'TkArray',
-            'bool' : 'TkBool'
+            'bool' : 'TkBool',
+            'in' : 'TkIn',
+            'to' : 'TkTo'
         }
 
         tokens = [
@@ -113,6 +115,7 @@ class AnalizadorLexicoGCL:
         t_TkAsig = r':='
         t_TkSemicolon = r';'
         t_TkArrow = r'-->'
+        t_TkGuard = r"\[\]"
         
 
         t_TkPlus = r'\+'
@@ -171,12 +174,7 @@ class AnalizadorLexicoGCL:
         return analizador_lexer
 
     def analizarArchivo(self, lexer):
-        # Kenny: AnalizarArchivo MK2, devolvi la parte de respuesta por que 
-        #        me parecio super util al menos lo de status, usando eso y la lista
-        #        de errores pude terminar todo lo que hay que imprimir
-        #        P.D: aun tengo ver si funciona bien los errores con los caracteres
-        #        escapados
-        
+
         # Se almacenan los Tokens
 
         linea = 1
@@ -194,39 +192,10 @@ class AnalizadorLexicoGCL:
                     self.respuesta['errores'].append(f"Error: Unexpected character \"{token.value[0]}\" in row {linea}, column {token.lexpos+1}")
                     self.tokens = []
                 elif self.respuesta['estatus'] == 0:
-                    if token.type == "TkString" and self.analizarString(token,linea)== False:
-                        self.respuesta['estatus'] = 1
-                        self.respuesta['resultado'] = 'Syntaxis Error'
-                        self.tokens = []
                     self.tokens.append(self.formatearToken(token,linea))
             
             linea += 1  
 
-    # Detecta los strings, si tiene caracteres escapados \. los analiza 
-    # si el caracter no es uno de los permitidos ignoramos el string por
-    # lo que dara error en las comillas y la barra invertida 
-    # devuelve True si todo fue bien
-    # Devuelve false si hay un error y añade los errores a la lista respuesta["errores"]
-    def analizarString(self, t,lineno) :
-        caracteresEscapados = re.findall(r"\\.",t.value)
-        error = False
-        # Eros
-        # Al corregir el regex no hace falta
-        # en el caso de prueba 7 lo hace explotar sin razon
-    
-        # for cha in caracteresEscapados:
-        #     if cha != "\\n" and cha != "\\\\" and cha!="\\":
-        #         error = True
-        #         break
-        # if error == True: 
-        #     self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[0]}\" in row {lineno}, column {t.lexpos+1}")
-        #     caracteresEscapados = re.finditer(r"\\.",t.value)
-        #     for cha in caracteresEscapados:
-        #         self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[cha.start()]}\" in row {lineno}, column {cha.start()+t.lexpos+1}")
-            
-        #     self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[-1]}\" in row {lineno}, column {t.lexpos+len(t.value)}")
-            
-        return not error
     
     def obtenerTokens(self):
         return self.tokens
@@ -235,10 +204,11 @@ class AnalizadorLexicoGCL:
         for token in self.tokens:
             print(token)
     
+    # Se retorna una tupla de string de errores imprimible y una 
+    # lista de strings de errores
     def obtenerErrores(self) -> tuple:
         errores_str = '\n'.join(self.respuesta['errores'])
-        # Se retorna una tupla de string de errores imprimible y una 
-        # lista de strings de errores
+        
         return ( errores_str, self.respuesta['errores'] )
     
     def imprimirErrores(self):
