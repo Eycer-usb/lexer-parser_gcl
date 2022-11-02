@@ -1,0 +1,8 @@
+|[
+  declare
+    _A : array[0..2]
+
+    _A := 1, 2, 4;
+    print "First: \" . _A[0] . ". "Second: "
+    // Esto es un comentario. Debe ser ignorado.//
+]| 
