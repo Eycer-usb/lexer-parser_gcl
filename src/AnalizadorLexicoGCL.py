@@ -102,7 +102,7 @@ class AnalizadorLexicoGCL:
         tokens = tokens + list(reservadas.values())
 
         # Definicion de las expresiones regulares de los tokens
-        t_TkString = r"[\'\"].+[\'\"]" 
+        t_TkString = r'[\'\"]([^\"\\]|\\\\|\\\"|\\n)*[\'\"]'
         t_TkOBlock = r'\|\['
         t_TkCBlock = r'\]\|'
         t_TkSoForth = r'\.\.'
@@ -209,17 +209,21 @@ class AnalizadorLexicoGCL:
     def analizarString(self, t,lineno) :
         caracteresEscapados = re.findall(r"\\.",t.value)
         error = False
-        for cha in caracteresEscapados:
-            if cha != "\\n" and cha != "\\\\" and cha!="\\":
-                error = True
-                break
-        if error == True: 
-            self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[0]}\" in row {lineno}, column {t.lexpos+1}")
-            caracteresEscapados = re.finditer(r"\\.",t.value)
-            for cha in caracteresEscapados:
-                self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[cha.start()]}\" in row {lineno}, column {cha.start()+t.lexpos+1}")
+        # Eros
+        # Al corregir el regex no hace falta
+        # en el caso de prueba 7 lo hace explotar sin razon
+    
+        # for cha in caracteresEscapados:
+        #     if cha != "\\n" and cha != "\\\\" and cha!="\\":
+        #         error = True
+        #         break
+        # if error == True: 
+        #     self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[0]}\" in row {lineno}, column {t.lexpos+1}")
+        #     caracteresEscapados = re.finditer(r"\\.",t.value)
+        #     for cha in caracteresEscapados:
+        #         self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[cha.start()]}\" in row {lineno}, column {cha.start()+t.lexpos+1}")
             
-            self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[-1]}\" in row {lineno}, column {t.lexpos+len(t.value)}")
+        #     self.respuesta['errores'].append(f"Error: Unexpected character \"{t.value[-1]}\" in row {lineno}, column {t.lexpos+len(t.value)}")
             
         return not error
     
@@ -244,5 +248,8 @@ class AnalizadorLexicoGCL:
     def formatearToken(self, token, linea) -> str:
         argumentable = [ 'TkId', 'TkString', 'TkNum' ]
         if (token.type in argumentable):
-            return '{}(\'{}\') {} {}'.format(token.type, token.value, linea, token.lexpos+1)
+            if( token.type == 'TkNum' or token.type == 'TkString' ):
+                return '{}({}) {} {}'.format(token.type, token.value, linea, token.lexpos+1)
+            
+            return '{}(\"{}\") {} {}'.format(token.type, token.value, linea, token.lexpos+1)
         return str(token.type) + ' ' +str(linea) + ' '+str(token.lexpos+1)
