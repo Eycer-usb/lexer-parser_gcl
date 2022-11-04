@@ -22,10 +22,10 @@ def main():
     if(sys.argv[1] != None):
         lexer = AnalizadorLexicoGCL(sys.argv[1])
 
-        # El lexer muestra guarda en su diccionario
-        # respuesta el estatus del analisis si el resultado 
+        # El lexer guarda en su diccionario llamado
+        # respuesta el estatus del analisis. Si el resultado 
         # fue exitoso (estatus igual a 1)
-        #  entonces se imprimen los tokens, si por otro lado el analisis
+        # entonces se imprimen los tokens, si por otro lado el analisis
         # falla (estatus == 1) se imprimen los errores del analisis
         if lexer.respuesta["estatus"] == 0:
             lexer.imprimirTokens()
