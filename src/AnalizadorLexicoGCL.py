@@ -8,6 +8,20 @@ class AnalizadorLexicoGCL:
     analisis lexico del archivo recibido como
     argumento y se almacena el resultado del analisis
     en el atributo respuesta como un diccionario
+
+    atributo respuesta:
+        estatus: 
+            0 = todo termino correctamente
+            1 = hubo un error al tratar de analizar
+        errores:
+            Contiene los errores sintacticos de haberlos.
+            Si no hubo un error sintactico entonces estara vacio
+        resultado:
+            Si todo fue bien, sera un string vacio, si hubo un error
+            sintactico contendra el string "Syntaxis Error", si hubo
+            error al intentar leer el archivo contendra el string
+            "Incorrect extension" o File not found, dependiendo 
+            del caso    
     """
     def __init__(self, nombre_archivo):
         self.respuesta = {
@@ -36,10 +50,12 @@ class AnalizadorLexicoGCL:
     """
     Analizador lexico.
     Examina el archivo almacenado en el atributo self.archivo
-    luego almacena los resultados obtenidos en el diccionario
-    self.respuesta segun el formato indicado
+    luego almacena los resultados obtenidos en el atributo 
+    tokens, si ocurre un error de sintaxis reinicia el atributo
+    tokens y almacena todos los errores en respuesta['errores']
     """
     def lexer(self):
+
         # palabras reservadas
         reservadas = {
             'declare' : 'TkDeclare',
@@ -137,33 +153,41 @@ class AnalizadorLexicoGCL:
 
         t_ignore_TkComment = r'//.*'
         
-        # Kenny: ignora uno o mas saltos de lineas
-        #        ademas en windows por algun motivo los saltos 
-        #        de linea no son solo \n si no que es \r\n
-        #        fuck windows >:V
         t_ignore_TkNewLine = r'\n+|\r\n+'
         
-        # Kenny: Version fancy para ignorar espacios y tabulaciones
         t_ignore_TkSpace = r'[ \t\r\n]+'
 
         # Definicion de reglas sobre los tokens
         
-        # Detecta los strings que tenga solo digitos y lo convierte en int's
-        # Kenny: Creo que puede ser util pasarlo a int asi que lo agregue
+        """
+        Analiza el token que se le pase como parametro si 
+        es un numero de cualquier cantidad de digito entonces
+        toma el valor del token (que es un string) y lo convierte 
+        en un int.
+        """
         def t_TkNum(t):
             r'\d+'
             t.value = int(t.value)
             return t
                           
-        # Regla para verificar si el Id no es una palabra reservada
+        """
+        Analiza el token que se le pase como parametro, si es una
+        secuencia de caracteres valida (que comience con una letra desde
+        la A hasta la z o un "_" y luego venga seguido cualquier cantidad de 
+        letras, numeros o el caracter "_") verifica si no esta en las palabras 
+        resevadas, en caso de estarlo ese token no se aceptara como un Id, en 
+        caso contrario se le tomara como un Id
+        """
         def t_TkId(t):
             r'[a-zA-Z_][a-zA-Z_0-9]*'
             t.type = reservadas.get(t.value, 'TkId')
             return t
 
-        # manejador de errores del lexer
-        # solo hace que el lexer ignore el error, el manejo mas
-        # detallado del error se hace mas abajo
+        """
+        Maneja los errores que pueda ocurrir. Hace que el 
+        lexer ignore el error y el almacenamiento de este
+        ocurre despues
+        """
         def t_error(e):
             e.lexer.skip(1)
             return e
@@ -173,10 +197,14 @@ class AnalizadorLexicoGCL:
         analizador_lexer = lex.lex()
         return analizador_lexer
 
+    """
+    Dado un lexer recorre todas las lineas del archivo almacenado
+    en self.archivo, si no encutra errores almacenara los tokens
+    encontrados en self.tokens, en caso de encontrar un error
+    reinicia self.token y almacena todos los errores que encuentre 
+    apartir  de ese punto en self.respuesta['errores']
+    """    
     def analizarArchivo(self, lexer):
-
-        # Se almacenan los Tokens
-
         linea = 1
 
         for line in self.archivo:
@@ -197,25 +225,43 @@ class AnalizadorLexicoGCL:
             linea += 1  
 
     
+    """
+    Devuelve la lista de todos los tokens encontrados
+    con informacion detallada de su tipo, linea y columna
+    """
     def obtenerTokens(self):
         return self.tokens
 
+    """
+    Devuelve un string contodos los tokens encontrados
+    con informacion detallada de su tipo, linea y columna
+    """
     def imprimirTokens(self):
         for token in self.tokens:
             print(token)
     
-    # Se retorna una tupla de string de errores imprimible y una 
-    # lista de strings de errores
+    """
+    Devuelve una tupla donde el primer elemento es un string 
+    con todos los errores sintacticos encontrados, y el segundo
+    elemento contiene estos errores almacenados en una lista
+    """
     def obtenerErrores(self) -> tuple:
         errores_str = '\n'.join(self.respuesta['errores'])
         
         return ( errores_str, self.respuesta['errores'] )
     
+    """
+    Imprime por pantalla todos los errores sintacticos 
+    encontrados
+    """
     def imprimirErrores(self):
         print(self.obtenerErrores()[0])
 
-    # Dado un token y su linea en el archivo se almacena el
-    # token en el formato solicitado
+    """
+    Dado un token y la linea donde se encontro devuelve un 
+    string con toda la informacion necesaria del token en 
+    su formato especifico
+    """
     def formatearToken(self, token, linea) -> str:
         argumentable = [ 'TkId', 'TkString', 'TkNum' ]
         if (token.type in argumentable):
