@@ -38,3 +38,11 @@ def main():
 # este no ejecutara la funcion main automaticamente.
 if __name__ == '__main__':
     main()
+
+
+"""
+        'Los grandes hombres no nacen siendo grandes, crecen grandiosamente'
+        
+        - El Padrino
+        
+"""
