@@ -27,9 +27,9 @@ def main():
         # fue exitoso (estatus igual a 1)
         # entonces se imprimen los tokens, si por otro lado el analisis
         # falla (estatus == 1) se imprimen los errores del analisis
-        if lexer.respuesta["estatus"] == 0:
+        if lexer.estatus == 0:
             lexer.imprimirTokens()
-        elif lexer.respuesta["estatus"] ==1:
+        elif lexer.estatus ==1:
             lexer.imprimirErrores()
     else:
         print('Introduzca un archivo valido')

@@ -3,8 +3,19 @@ import ply.yacc as yacc
 import re
 
 class analizadorSintactico: 
+
+    # El constructor de clase crea el parser, y evalua el
+    # archivo recibido como argumento. 
     def __init__(self, nombre_archivo,tokens):        
-        
+                
+        parser = self.parser(tokens)
+        self.archivo = open(nombre_archivo)
+        contenido = self.archivo.read()
+        self.archivo.close()
+        self.ast = parser.parse(contenido)
+
+    # Se define el parser con su gramatica, precedencia y estructura
+    def parser(self, tokens):
         # Informacion del arbol
         # usaremos listas para modelar el arbol cada sub arbol tendra la siguiente 
         # estructura:
@@ -302,17 +313,16 @@ class analizadorSintactico:
             pass
 
         def p_error(p):
-            print("error")
-        
+            #self.errores.append(f"Sintaxis error in row {p.lexer.lineno}, column {p.lexpos + 1}: unexpected token '{dir(p)}'")
+            print(f"Sintaxis error in row {p.lexer.lineno}, column {p.lexpos + 1}: unexpected token '{p.value}'.")
         parser = yacc.yacc()
-        self.archivo = open(nombre_archivo)
-        contenido = self.archivo.read()
-        self.archivo.close()
-        self.ast = parser.parse(contenido)
+        return parser
     
+    # Se imprime el AST
     def  imprimir_ast(self):
         self.imprimir_ast_rec(self.ast,0)
     
+    # Accion Recursiva de impresion sobre el AST
     def imprimir_ast_rec(self, ast, lvl):
         if type(ast) == str:
             print("-"*lvl +ast)
@@ -325,12 +335,15 @@ class analizadorSintactico:
         else:
             print("WIP")
     
+    # Retorna el AST asociado
     def obtener_ast(self):
         return self.ast
     
+    # Se convierte el AST en String 
     def ast_to_string(self):
         return self.ast_to_string_rec(self.ast,0)
     
+    # Accion recursiva de conversion a string sobre el AST
     def ast_to_string_rec(self,ast,lvl):
         if type(ast) == str:
             return "-"*lvl + ast
