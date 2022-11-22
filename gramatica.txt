@@ -89,3 +89,4 @@ guards -> guards TkGuard then
 
 then -> exp TkArrow code
 
+instSkip -> TkSkip
