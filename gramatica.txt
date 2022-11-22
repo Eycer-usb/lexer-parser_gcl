@@ -1,0 +1,91 @@
+instBlock -> TkOBlock declare TkCBlock
+           | TkOBlock declare code TkCBlock
+	   | TkOBlock code TkCBlock
+		  
+declare -> TkDeclare declaration
+	 | TkDeclare seqDeclare
+
+declaration -> DeclaList TkTwoPoints type
+
+DeclaList -> TkId TkComma DeclaList
+           | TkId
+
+seqDeclare -> declaration TkSemicolon declaration
+		             | seqDeclare TkSemicolon declaration
+
+type -> TkInt
+      | TkBool
+      | TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket
+      | TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket
+      | TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket
+      | TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket
+
+code -> instruction
+      | sequencing
+
+sequencing -> instruction TkSemicolon instruction
+            | sequencing TkSemicolon instruction
+
+instPrint -> TkPrint printAble
+           | TkPrint instConcat
+
+instConcat -> printAble TkConcat  printAble
+            | instConcat TkConcat printAble
+
+printAble -> TkString
+           | exp
+
+arrayIni -> exp TkComma exp
+          | arrayIni TkComma exp
+
+instAsig -> TkId TkAsig exp
+          | TkId TkAsig arrayIni
+          | TkId TkAsig modArray
+
+instruction -> instPrint
+             | instAsig
+             | instSkip
+             | instBlock
+             | instFor
+             | instIf
+             | instDo
+
+consArray -> TkId TkOBracket exp TkCBracket
+           | modArray TkOBracket exp TkCBracket
+
+modArray -> modArray TkOpenPar exp TkTwoPoints exp TkClosePar
+          | finish
+
+finish -> TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+
+exp -> exp TkPlus exp
+     | exp TkMinus exp
+     | exp TkMult exp
+     | exp TkAnd exp
+     | exp TkOr exp
+     | exp TkLess exp
+     | exp TkLeq exp
+     | exp TkGeq exp
+     | exp TkGreater exp
+     | exp TkEqual exp
+     | exp TkNEqual exp
+     | TkNot exp
+     | TkOpenPar exp TkClosePar
+     | consArray
+     | TkNum
+     | TkTrue
+     | TkFalse
+     | TkMinus exp
+     | TkId
+
+instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
+
+instIf -> TkIf guards TkFi
+
+instDo -> TkDo guards TkOd
+
+guards -> guards TkGuard then 
+        | then
+
+then -> exp TkArrow code
+

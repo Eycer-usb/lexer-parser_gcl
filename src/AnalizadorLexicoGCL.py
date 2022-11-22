@@ -1,4 +1,3 @@
-import string
 import ply.lex as lex
 import re
 
@@ -7,52 +6,54 @@ class AnalizadorLexicoGCL:
     Al instanciarse la clase se ejecuta el 
     analisis lexico del archivo recibido como
     argumento y se almacena el resultado del analisis
-    en el atributo respuesta como un diccionario
+    en el atributo respuesta
 
-    atributo respuesta:
-        estatus: 
-            0 = todo termino correctamente
-            1 = hubo un error al tratar de analizar
-        errores:
-            Contiene los errores sintacticos de haberlos.
-            Si no hubo un error sintactico entonces estara vacio
-        resultado:
-            Si todo fue bien, sera un string vacio, si hubo un error
-            sintactico contendra el string "Syntaxis Error", si hubo
-            error al intentar leer el archivo contendra el string
-            "Incorrect extension" o File not found, dependiendo 
-            del caso    
+    atributo estatus: 
+        0 = todo termino correctamente
+        1 = hubo un error al tratar de analizar
+        2 = Archivo no encontrado
+        3 = Extension incorrecta
+    atributo  errores:
+        Contiene los errores sintacticos de haberlos.
+        Si no hubo un error sintactico entonces estara vacio
+    atributo  resultado:
+        Si todo fue bien, sera un string vacio, si hubo un error
+        sintactico contendra el string "Syntaxis Error", si hubo
+        error al intentar leer el archivo contendra el string
+        "Incorrect extension" o File not found, dependiendo 
+        del caso    
     """
     def __init__(self, nombre_archivo):
-        self.respuesta = {
-            'estatus' : 0,
-            'errores': [],
-            'resultado': '',
-        }
         
+        self.errores = []
+        self.resultado = ""
+        self.estatus = 0        
+        self.tokensInfo = []
         self.tokens = []
+
         try:
             if nombre_archivo[-4:len(nombre_archivo)] != ".gcl":
-                self.respuesta['estatus'] = 3
-                self.respuesta['resultado'] = "Incorrect extension"
+                self.estatus = 3
+                self.resultado = "Incorrect extension"
                 return
 
             self.archivo = open(nombre_archivo)
         
-            lexer = self.lexer()
+            self.tokens,lexer = self.lexer()
             self.analizarArchivo(lexer)
             self.archivo.close()
+            
 
         except FileNotFoundError:
-            self.respuesta['estatus'] = 2
-            self.respuesta['resultado'] = "File not found"
+            self.estatus = 2
+            self.resultado = "File not found"
     
     """
     Analizador lexico.
     Examina el archivo almacenado en el atributo self.archivo
     luego almacena los resultados obtenidos en el atributo 
     tokens, si ocurre un error de sintaxis reinicia el atributo
-    tokens y almacena todos los errores en respuesta['errores']
+    tokens y almacena todos los errores en errores
     """
     def lexer(self):
 
@@ -153,9 +154,7 @@ class AnalizadorLexicoGCL:
 
         t_ignore_TkComment = r'//.*'
         
-        t_ignore_TkNewLine = r'\n+|\r\n+'
-        
-        t_ignore_TkSpace = r'[ \t\r\n]+'
+        t_ignore_TkSpace = r'[ \t]'
 
         # Definicion de reglas sobre los tokens
         
@@ -167,7 +166,6 @@ class AnalizadorLexicoGCL:
         """
         def t_TkNum(t):
             r'\d+'
-            t.value = int(t.value)
             return t
                           
         """
@@ -184,45 +182,46 @@ class AnalizadorLexicoGCL:
             return t
 
         """
-        Maneja los errores que pueda ocurrir. Hace que el 
-        lexer ignore el error y el almacenamiento de este
-        ocurre despues
+        Permite al lexer tener actualizada el numero de la linea que se esta 
+        analizando
+        """
+        def t_TkNewLine(t):
+            r'\n+|\r\n+'
+            t.lexer.lineno += len(t.value)       
+       
+        """
+        Maneja los errores que pueda ocurrir. Almacena un string con toda la 
+        informacion del error en la lista self.errores
         """
         def t_error(e):
+            self.errores.append(f"Error: Unexpected character \"{e.value[0]}\" in row {e.lexer.lineno}, column {e.lexpos + 1}")
+            
+            if self.estatus == 0: self.estatus = 1
+            if self.tokensInfo != []: self.tokensInfo = []
+            
             e.lexer.skip(1)
-            return e
-
         
         # Inicializacion del lexer
         analizador_lexer = lex.lex()
-        return analizador_lexer
+
+        return tokens, analizador_lexer
 
     """
     Dado un lexer recorre todas las lineas del archivo almacenado
     en self.archivo, si no encutra errores almacenara los tokens
-    encontrados en self.tokens, en caso de encontrar un error
+    encontrados en self.tokensInfo, en caso de encontrar un error
     reinicia self.token y almacena todos los errores que encuentre 
-    apartir  de ese punto en self.respuesta['errores']
+    apartir  de ese punto en self.errores
     """    
-    def analizarArchivo(self, lexer):
-        linea = 1
-
-        for line in self.archivo:
-            lexer.input(line)            
+    def analizarArchivo(self, lexer):        
+        for line in self.archivo: 
+            lexer.input(line)
             while True:
-                token = lexer.token()
-                if not token:
+                tok = lexer.token()
+                if not tok:
                     break
-                elif token.type == 'error':
-                    if  self.respuesta['estatus'] != 1: 
-                        self.respuesta['estatus'] = 1
-                        self.respuesta['resultado'] = 'Syntaxis Error'
-                    self.respuesta['errores'].append(f"Error: Unexpected character \"{token.value[0]}\" in row {linea}, column {token.lexpos+1}")
-                    self.tokens = []
-                elif self.respuesta['estatus'] == 0:
-                    self.tokens.append(self.formatearToken(token,linea))
-            
-            linea += 1  
+                if self.estatus == 0: self.tokensInfo.append(self.formatearToken(tok))
+        
 
     
     """
@@ -230,14 +229,14 @@ class AnalizadorLexicoGCL:
     con informacion detallada de su tipo, linea y columna
     """
     def obtenerTokens(self):
-        return self.tokens
+        return self.tokensInfo
 
     """
     Devuelve un string contodos los tokens encontrados
     con informacion detallada de su tipo, linea y columna
     """
     def imprimirTokens(self):
-        for token in self.tokens:
+        for token in self.tokensInfo:
             print(token)
     
     """
@@ -246,9 +245,9 @@ class AnalizadorLexicoGCL:
     elemento contiene estos errores almacenados en una lista
     """
     def obtenerErrores(self) -> tuple:
-        errores_str = '\n'.join(self.respuesta['errores'])
+        errores_str = '\n'.join(self.errores)
         
-        return ( errores_str, self.respuesta['errores'] )
+        return ( errores_str, self.errores )
     
     """
     Imprime por pantalla todos los errores sintacticos 
@@ -262,11 +261,11 @@ class AnalizadorLexicoGCL:
     string con toda la informacion necesaria del token en 
     su formato especifico
     """
-    def formatearToken(self, token, linea) -> str:
+    def formatearToken(self, token) -> str:
         argumentable = [ 'TkId', 'TkString', 'TkNum' ]
         if (token.type in argumentable):
             if( token.type == 'TkNum' or token.type == 'TkString' ):
-                return '{}({}) {} {}'.format(token.type, token.value, linea, token.lexpos+1)
+                return '{}({}) {} {}'.format(token.type, token.value, token.lineno, token.lexpos+1)
             
-            return '{}(\"{}\") {} {}'.format(token.type, token.value, linea, token.lexpos+1)
-        return str(token.type) + ' ' +str(linea) + ' '+str(token.lexpos+1)
+            return '{}(\"{}\") {} {}'.format(token.type, token.value, token.lineno, token.lexpos+1)
+        return str(token.type) + ' ' +str(token.lineno) + ' ' + str(token.lexpos+1)
