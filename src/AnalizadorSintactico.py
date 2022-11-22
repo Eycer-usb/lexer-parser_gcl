@@ -9,9 +9,11 @@ class analizadorSintactico:
     def __init__(self, nombre_archivo,tokens):        
                 
         parser = self.parser(tokens)
-        self.archivo = open(nombre_archivo)
-        contenido = self.archivo.read()
-        self.archivo.close()
+        self.nombre_archivo = nombre_archivo
+        archivo = open(nombre_archivo)
+        contenido = archivo.read()
+        archivo.close()
+        self.noLineas = sum(1 for line in open(nombre_archivo)) - 1
         self.ast = parser.parse(contenido)
 
     # Se define el parser con su gramatica, precedencia y estructura
@@ -321,7 +323,13 @@ class analizadorSintactico:
 
         def p_error(p):
             #self.errores.append(f"Sintaxis error in row {p.lexer.lineno}, column {p.lexpos + 1}: unexpected token '{dir(p)}'")
-            print(f"Sintaxis error in row {p.lexer.lineno}, column {p.lexpos + 1}: unexpected token '{p.value}'.")
+            row = p.lexer.lineno - self.noLineas
+            excedente_col = 0
+            with open(self.nombre_archivo, 'r') as f:
+                for line in range(row-1):
+                    excedente_col += sum( 1 for char in f.readline() )
+            col = p.lexpos - excedente_col + 1
+            print(f"Sintaxis error in row {row}, column {col}: unexpected token '{p.value}'.")
         parser = yacc.yacc()
         return parser
     
