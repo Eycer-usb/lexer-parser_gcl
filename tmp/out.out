@@ -1,172 +1,30 @@
 Block
 -Declare
---Sequencing
----a, b, i : int
----x, y : array[Literal: 2..Literal: 5]
--Sequencing
---Sequencing
----Sequencing
-----Sequencing
------Sequencing
-------Sequencing
--------Sequencing
---------Sequencing
----------Sequencing
-----------Sequencing
------------Asig
-------------Ident: a
-------------Minus
--------------Literal: 1
------------Asig
-------------Ident: b
-------------Literal: 4
-----------Asig
------------Ident: x
------------WriteArray
-------------WriteArray
--------------Ident: x
--------------TwoPoints
---------------Literal: 2
---------------Ident: a
-------------TwoPoints
--------------Literal: 3
--------------Ident: b
----------For
-----------In
------------Ident: i
------------To
-------------Ident: a
-------------Minus
--------------Ident: b
--------------Ident: a
-----------Print
------------Concat
-------------String: "Variable \"i\" es igual a: "
-------------Ident: i
---------Asig
----------Ident: y
----------Comma
-----------Comma
------------Comma
-------------Literal: 1
-------------Minus
--------------Literal: 1
------------Literal: 2
-----------Minus
------------Literal: 2
--------For
---------In
----------Ident: j
----------To
-----------Literal: 2
-----------Literal: 5
---------Print
----------Concat
-----------Concat
------------Concat
-------------Ident: j
-------------String: ":"
------------ReadArray
-------------Ident: y
-------------Ident: j
-----------String: " "
-------Asig
--------Ident: a
--------Plus
---------Literal: 3
---------Ident: b
------Asig
+--a, b, c : bool
+-Asig
+--Ident: a
+--And
+---And
+----Or
+-----Less
+------Ident: a
 ------Ident: b
-------Minus
+-----Or
+------NotEqual
+-------Ident: b
+-------Literal: 10
+------Equal
+-------Plus
+--------Literal: 2
+--------Literal: 3
 -------Literal: 4
-----If
------Guard
-------Guard
--------Then
---------And
----------And
-----------Leq
------------Literal: 2
------------Ident: b
-----------Leq
------------Ident: b
------------Literal: 5
----------Literal: true
---------Print
----------Ident: b
--------Then
---------And
----------Less
-----------ReadArray
------------Ident: y
------------Literal: 2
-----------Ident: b
----------Less
-----------Ident: b
-----------ReadArray
------------Ident: y
------------Literal: 2
---------Print
----------Ident: a
-------Then
--------Or
---------Geq
----------ReadArray
-----------Ident: y
-----------Literal: 3
----------Ident: b
---------Geq
----------Ident: b
----------ReadArray
-----------Ident: y
-----------Literal: 3
--------Block
---------Declare
----------z : array[Literal: 2..Literal: 3]
---------Sequencing
----------Sequencing
-----------Print
------------Concat
-------------Ident: a
-------------Ident: b
-----------Asig
------------Ident: z
------------WriteArray
-------------WriteArray
--------------Ident: z
--------------TwoPoints
---------------Literal: 2
---------------Ident: a
-------------TwoPoints
--------------Literal: 3
--------------Ident: b
----------Print
-----------Concat
------------Concat
-------------Concat
--------------Concat
---------------String: "array["
---------------ReadArray
----------------Ident: z
----------------Literal: 2
--------------String: ".."
-------------ReadArray
--------------Ident: z
--------------Literal: 3
------------String: "]"
----Asig
-----Ident: i
-----Literal: 3
---Do
----Then
-----Less
------Ident: i
------Literal: 10
-----Sequencing
------Print
-------String: "Still here!"
------Asig
-------Ident: i
-------Plus
--------Ident: i
--------Literal: 1
+----Greater
+-----Ident: c
+-----Ident: a
+---Or
+----Geq
+-----Ident: c
+-----Ident: a
+----Leq
+-----Ident: a
+-----Ident: b
