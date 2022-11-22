@@ -1920,17 +1920,8 @@ state 71
     (54) exp -> exp . TkEqual exp
     (55) exp -> exp . TkNEqual exp
 
-    TkPlus          reduce using rule 56 (exp -> TkNot exp .)
-    TkMinus         reduce using rule 56 (exp -> TkNot exp .)
-    TkMult          reduce using rule 56 (exp -> TkNot exp .)
     TkAnd           reduce using rule 56 (exp -> TkNot exp .)
     TkOr            reduce using rule 56 (exp -> TkNot exp .)
-    TkLess          reduce using rule 56 (exp -> TkNot exp .)
-    TkLeq           reduce using rule 56 (exp -> TkNot exp .)
-    TkGeq           reduce using rule 56 (exp -> TkNot exp .)
-    TkGreater       reduce using rule 56 (exp -> TkNot exp .)
-    TkEqual         reduce using rule 56 (exp -> TkNot exp .)
-    TkNEqual        reduce using rule 56 (exp -> TkNot exp .)
     TkConcat        reduce using rule 56 (exp -> TkNot exp .)
     TkSemicolon     reduce using rule 56 (exp -> TkNot exp .)
     TkCBlock        reduce using rule 56 (exp -> TkNot exp .)
@@ -1944,18 +1935,27 @@ state 71
     TkCBracket      reduce using rule 56 (exp -> TkNot exp .)
     TkTwoPoints     reduce using rule 56 (exp -> TkNot exp .)
     TkTo            reduce using rule 56 (exp -> TkNot exp .)
+    TkPlus          shift and go to state 59
+    TkMinus         shift and go to state 60
+    TkMult          shift and go to state 61
+    TkLess          shift and go to state 64
+    TkLeq           shift and go to state 65
+    TkGeq           shift and go to state 66
+    TkGreater       shift and go to state 67
+    TkEqual         shift and go to state 68
+    TkNEqual        shift and go to state 69
 
-  ! TkPlus          [ shift and go to state 59 ]
-  ! TkMinus         [ shift and go to state 60 ]
-  ! TkMult          [ shift and go to state 61 ]
+  ! TkPlus          [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkMinus         [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkMult          [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkLess          [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkLeq           [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkGeq           [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkGreater       [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkEqual         [ reduce using rule 56 (exp -> TkNot exp .) ]
+  ! TkNEqual        [ reduce using rule 56 (exp -> TkNot exp .) ]
   ! TkAnd           [ shift and go to state 62 ]
   ! TkOr            [ shift and go to state 63 ]
-  ! TkLess          [ shift and go to state 64 ]
-  ! TkLeq           [ shift and go to state 65 ]
-  ! TkGeq           [ shift and go to state 66 ]
-  ! TkGreater       [ shift and go to state 67 ]
-  ! TkEqual         [ shift and go to state 68 ]
-  ! TkNEqual        [ shift and go to state 69 ]
 
 
 state 72

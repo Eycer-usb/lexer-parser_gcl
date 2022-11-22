@@ -28,11 +28,12 @@ class analizadorSintactico:
             ("left","TkComma"),
             ("left","TkOr"),
             ("left","TkAnd"),
+            ('right', "TkNot"),
             ("left","TkEqual","TkNEqual"),
             ("left","TkLess","TkLeq","TkGeq","TkGreater"),
             ("left","TkPlus","TkMinus"),
             ("left","TkMult"),
-            ("right","UMinus","TkNot")
+            ("right","UMinus")
         )
         
         start = 'instBlock'
@@ -242,7 +243,7 @@ class analizadorSintactico:
             elif p[2] == "==":
                 p[0] = ["Equal",p[1],p[3]]
             elif p[2] == "!=":
-                p[0] = ["Not Equal",p[1],p[3]]
+                p[0] = ["NotEqual",p[1],p[3]]
         
         def p_exp(p):
             '''
@@ -253,7 +254,7 @@ class analizadorSintactico:
             if len(p) == 3:
                 p[0] = ["Not",p[2]]
             elif len(p) == 4:
-                p[0] = p[1] + p[2] + p[3]
+                p[0] = p[2]
             else: 
                 p[0] = p[1]
 
@@ -339,7 +340,8 @@ class analizadorSintactico:
                 self.imprimir_ast_rec(ast[i],lvl+1)
                 i += 1
         else:
-            print("WIP")
+            pass
+            #print("WIP")
     
     # Retorna el AST asociado
     def obtener_ast(self):
