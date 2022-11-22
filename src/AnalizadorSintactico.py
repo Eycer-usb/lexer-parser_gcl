@@ -18,6 +18,7 @@ class analizadorSintactico:
 
     # Se define el parser con su gramatica, precedencia y estructura
     def parser(self, tokens):
+
         # Informacion del arbol
         # usaremos listas para modelar el arbol cada sub arbol tendra la siguiente 
         # estructura:
@@ -54,6 +55,7 @@ class analizadorSintactico:
             else:
                 p[0] = ["Block",p[2]]
         
+        # Sentencia de Declaracion
         def p_declare(p):
             '''
                 declare : TkDeclare declaration
@@ -61,13 +63,14 @@ class analizadorSintactico:
             '''
             p[0] = ["Declare",p[2]]
         
+        # Instruccion de Declaracion
         def p_declaration(p):
             '''
                 declaration : DeclaList TkTwoPoints type
             '''
-            #p[0] = [p[1] + p[2] + p[3], p[1], p[3]]
             p[0] = p[1] + " : " + p[3]
 
+        # Lista de Declaraciones
         def p_decaList(p):
             '''
             DeclaList : TkId TkComma DeclaList
@@ -77,7 +80,8 @@ class analizadorSintactico:
                 p[0] = p[1] + ", " +p[3]
             else:
                 p[0] = p[1]
-                
+
+        # Secuencia de Declaraciones        
         def p_seqDeclare(p):
             '''
                 seqDeclare : declaration TkSemicolon declaration
@@ -85,6 +89,7 @@ class analizadorSintactico:
             '''
             p[0] = ["Sequencing", p[1], p[3]]
         
+        # Tipos de Datos
         def p_type(p):
             '''
                 type : TkInt
@@ -106,6 +111,7 @@ class analizadorSintactico:
                 else:
                     p[0] =  p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[6] + p[7]
 
+        # Estructura de los bloques de codigo
         def p_code(p):
             '''
                 code : instruction
@@ -113,6 +119,7 @@ class analizadorSintactico:
             '''
             p[0] = p[1]
         
+        # Definicion de secuenciacion de instrucciones
         def p_sequencing(p):
             '''
                 sequencing : instruction TkSemicolon instruction
@@ -120,6 +127,7 @@ class analizadorSintactico:
             '''
             p[0] = ["Sequencing", p[1],p[3]]
         
+        # Instruccion Print
         def p_instPrint(p):
             '''
                 instPrint : TkPrint printAble
@@ -128,13 +136,15 @@ class analizadorSintactico:
             
             p[0] = ["Print", p[2]]
 
+        # Instruccion Skip
         def p_instSkip(p):
             '''
                 instSkip : TkSkip
             '''
             
             p[0] = ["skip"]
-            
+        
+        # Instruccion Concatenacion
         def p_instConcat(p):
             '''
                 instConcat : printAble TkConcat  printAble
@@ -142,18 +152,21 @@ class analizadorSintactico:
             '''
             p[0] = ["Concat", p[1], p[3]]
 
+        # Sentencia Imprimible de Strings
         def p_printeAble1(p):
             '''
             printAble : TkString
             '''
             p[0] = f"String: {p[1]}"
         
+        # Sentencia Imprimible de Expresiones
         def p_printeAble2(p):
             '''
             printAble : exp
             '''
             p[0] = p[1]
-               
+            
+        # Definicion de los Arrays
         def p_arrayIni(p):
             '''
                 arrayIni : exp TkComma exp
@@ -161,6 +174,7 @@ class analizadorSintactico:
             '''
             p[0] = ["Comma", p[1], p[3]]
         
+        # Instruccion de Asignacion
         def p_instAsig(p):
             '''
                 instAsig : TkId TkAsig exp
@@ -169,6 +183,7 @@ class analizadorSintactico:
             '''
             p[0] = ["Asig",f"Ident: {p[1]}",p[3]]
         
+        # Generalizacion de instrucciones
         def p_instruction(p):
             '''
                 instruction : instPrint
@@ -181,6 +196,7 @@ class analizadorSintactico:
             '''
             p[0] = p[1]
         
+        # Caracterizacion de los arrays
         def p_consArray(p):
             '''
                 consArray : TkId TkOBracket exp TkCBracket
@@ -209,7 +225,8 @@ class analizadorSintactico:
                 finish : TkId TkOpenPar exp TkTwoPoints exp TkClosePar
             '''
             p[0] = ["WriteArray",f"Ident: {p[1]}",["TwoPoints",p[3],p[5]]]
-                
+        
+        # Gramatica de los Operadores Binarios
         def p_opBin(p):
             '''
                 exp : exp TkPlus exp
@@ -247,6 +264,7 @@ class analizadorSintactico:
             elif p[2] == "!=":
                 p[0] = ["NotEqual",p[1],p[3]]
         
+        # Generalizacion de la gramatica de las expresiones
         def p_exp(p):
             '''
                 exp : TkNot exp
@@ -260,6 +278,7 @@ class analizadorSintactico:
             else: 
                 p[0] = p[1]
 
+        # Definicion de las estructuras de los literales
         def p_literales(p):
             '''
                 exp : TkNum
@@ -272,30 +291,35 @@ class analizadorSintactico:
             else:
                 p[0] = ["Minus", p[2]]
         
+        # Definicion de las estructuras de las variables (ids)
         def p_id(p):
             '''
                 exp : TkId 
             '''        
             p[0] = f"Ident: {p[1]}"
-        
+
+        # Gramatica del bucle for
         def p_instFor(p):
             '''
                 instFor : TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
             '''
             p[0] = ["For",["In",f"Ident: {p[2]}",["To", p[4], p[6]]],p[8]]
         
+        # Gramatica de la instruccion de seleccion if
         def p_instIf(p):
             '''
                 instIf : TkIf guards TkFi
             '''
             p[0] = ["If", p[2]]
 
+        # Gramatica del bucle do
         def p_instDo(p):
             '''
                 instDo : TkDo guards TkOd
             '''
             p[0] = ["Do", p[2]]
 
+        # Estructura de las Guardas de las instrucciones de seleccion y bucle
         def p_guards(p):
             '''
                 guards : guards TkGuard then 
@@ -306,6 +330,7 @@ class analizadorSintactico:
             else:
                 p[0] = p[1]
 
+        # Simbolos adicionales
         def p_then(p):
             '''
                 then : exp TkArrow code
@@ -321,15 +346,16 @@ class analizadorSintactico:
             '''
             pass
 
+        # Manejo de los errores
         def p_error(p):
-            #self.errores.append(f"Sintaxis error in row {p.lexer.lineno}, column {p.lexpos + 1}: unexpected token '{dir(p)}'")
-            row = p.lexer.lineno - self.noLineas
+            row = p.lexer.lineno - self.noLineas # Fila del Error
             excedente_col = 0
             with open(self.nombre_archivo, 'r') as f:
                 for line in range(row-1):
                     excedente_col += sum( 1 for char in f.readline() )
-            col = p.lexpos - excedente_col + 1
+            col = p.lexpos - excedente_col + 1 # Columna del error
             print(f"Sintaxis error in row {row}, column {col}: unexpected token '{p.value}'.")
+            
         parser = yacc.yacc()
         return parser
     
