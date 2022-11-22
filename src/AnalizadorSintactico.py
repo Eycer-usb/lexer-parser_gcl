@@ -124,6 +124,13 @@ class analizadorSintactico:
             '''
             
             p[0] = ["Print", p[2]]
+
+        def p_instSkip(p):
+            '''
+                instSkip : TkSkip
+            '''
+            
+            p[0] = ["skip"]
             
         def p_instConcat(p):
             '''
@@ -308,7 +315,6 @@ class analizadorSintactico:
                       | TkSpace
                       | TkNewLine
                       | ignorados
-            instSkip : TkSkip
             '''
             pass
 
