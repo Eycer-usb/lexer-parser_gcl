@@ -1,0 +1,6 @@
+|[
+  declare
+   a, b: int;
+   isTrue, isFalse: bool
+   isTrue := true
+]|

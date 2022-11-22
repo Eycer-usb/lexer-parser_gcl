@@ -1,0 +1,39 @@
+|[
+  declare
+     a, b, i : int;
+     x, y : array[2..5]
+
+  // iterar entre a y b
+  a := -1;
+  b := 4;
+  x := x(2:a)(3:b);
+  for i in a to b-a -->
+      print "Variable \"i\" es igual a: " . i
+  rof;
+
+  // iterar sobre los indices del segundo arreglo
+  y := 1, -1, 2, -2;
+  for j in 2 to 5 -->
+      print j . ":" . y[j] . " "
+  rof;
+
+  a := 3 + b;
+  b := -4;
+
+  if 2 <= b /\ b <= 5 /\ true--> print b
+  [] y[2] < b /\ b < y[2] --> print a
+  [] y[3] >= b \/ b >= y[3] --> 
+     |[
+        declare z : array[2..3]
+        print a . b;
+        z := z(2:a)(3:b);
+        print "array[" . z[2] . ".." . z[3] . "]"
+     ]|
+  fi;
+
+  i := 3;
+  do i < 10 -->
+      print "Still here!";
+      i := i+1
+  od
+]|

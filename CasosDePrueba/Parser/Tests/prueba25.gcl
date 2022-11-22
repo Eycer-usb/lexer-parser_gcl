@@ -1,0 +1,5 @@
+|[
+  declare
+    a : bool
+    a := true\/false\/!true==!true/\false/\false\/false
+]|

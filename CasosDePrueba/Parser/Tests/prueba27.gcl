@@ -1,0 +1,6 @@
+|[
+  declare
+    a, b : bool;
+    c : int
+    a := (true\/(b\/c==4))/\false/\(false\/a)
+]|

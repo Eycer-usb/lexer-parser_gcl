@@ -1,0 +1,8 @@
+|[
+  declare
+   a : int;
+   isTrue : bool;
+   A, B : array[-2..3]
+
+   a := A[2]+-B[1]*A(2:3)[2]
+]|

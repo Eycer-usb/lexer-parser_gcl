@@ -1,0 +1,6 @@
+|[
+  declare
+    a, b, c : bool;
+    d : int
+    a := a\/b\/!d==!a/\b/\a\/b
+]|

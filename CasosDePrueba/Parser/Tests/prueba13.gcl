@@ -1,0 +1,25 @@
+|[
+  declare
+    a, b, c : int;
+    d, e, f : bool;
+    A : array[2..4]
+    a := b+2*3 - -3*2;
+    d := false;
+    A := A(2+a:b)[2] <= !!b;
+    print "\"hola mundo \" \n" . 3 . A(2+a:b)[2];
+    do true -->
+      d := false;
+      a := 2+3
+    [] false -->
+      a := 2+3
+    [] false -->
+      d := true \/ false
+    od;
+    for x in 2 to 5 -->
+    |[
+      declare a : int
+      skip
+    ]|
+    rof
+    // Esto es un comentario. Debe ser ignorado.
+]| 

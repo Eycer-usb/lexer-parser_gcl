@@ -1,0 +1,8 @@
+|[
+  declare
+   a : int;
+   isTrue : bool;
+   A, B : array[-2..3]
+
+   a := 0
+]|
