@@ -88,7 +88,6 @@ class analizadorSintactico:
                 symbolTable = [p[2],*symbolTable]
             
             p[0].symbolTable = symbolTable
-            print(symbolTable)
             
         # Instruccion de Declaracion
         def p_declaration(p):
