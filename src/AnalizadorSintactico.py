@@ -1,6 +1,7 @@
 
 import ply.yacc as yacc
 import re
+from src.AnalizadorSemantico import *
 
 class analizadorSintactico: 
 
@@ -19,13 +20,6 @@ class analizadorSintactico:
     # Se define el parser con su gramatica, precedencia y estructura
     def parser(self, tokens):
 
-        # Informacion del arbol
-        # usaremos listas para modelar el arbol cada sub arbol tendra la siguiente 
-        # estructura:
-        #[a,b,ci]
-        # donde a es lo que se imprimira b es el padre/ raiz del subarbol
-        # y ci es una lista con todos los hijos de b
-
 
         precedence = (
             ("left","TkComma"),
@@ -39,8 +33,20 @@ class analizadorSintactico:
             ("right","UMinus")
         )
         
-        start = 'instBlock'
+        start = 'program'
         
+        global symbolTable
+        symbolTable = []
+
+        # symbolTable[0] = Direccion a la tabla anterior
+        # symbolTable[1] = valor de la tabla actual
+
+        def p_program(p):
+            '''
+                program : instBlock 
+            '''
+            p[0] = p[1]
+
         # El programa vacio no es reconocido como valido
         # El apartado declare es opcional, pero si 
         # existe debe tener al menos una declaracion
@@ -50,26 +56,50 @@ class analizadorSintactico:
                       | TkOBlock declare code TkCBlock
                       | TkOBlock code TkCBlock
             '''
+
+            global symbolTable
+
             if len(p) == 5:
-                p[0] = ["Block",p[2],p[3]]
+                #p[0] = ["Block", p[2], p[3]]
+                p[0] = noditoBlock("Block",[p[2],p[3]])
+                p[0].sons[0].father = p[0]
+                p[0].sons[1].father = p[0]
             else:
-                p[0] = ["Block",p[2]]
-        
+                #p[0] = ["Block",p[2]]
+                p[0] = noditoBlock("Block",[p[2]])
+                p[0].sons[0].father = p[0]
+            
+            symbolTable.pop(0)
+
         # Sentencia de Declaracion
         def p_declare(p):
             '''
                 declare : TkDeclare declaration
                         | TkDeclare seqDeclare
             '''
-            p[0] = ["Declare",p[2]]
-        
+            #p[0] = ["Declare",p[2]]
+            
+            p[0] = noditoDeclare("Symbols Table",[])
+
+            global symbolTable
+            if len(symbolTable) == 0 :
+                symbolTable = [p[2]]
+            else:
+                symbolTable = [p[2],*symbolTable]
+            
+            p[0].symbolTable = symbolTable
+            print(symbolTable)
+            
         # Instruccion de Declaracion
         def p_declaration(p):
             '''
                 declaration : DeclaList TkTwoPoints type
             '''
-            p[0] = p[1] + " : " + p[3]
-
+            tabla = {}
+            for i in p[1]:
+                tabla[i] = p[3]
+            
+            p[0] = tabla
         # Lista de Declaraciones
         def p_decaList(p):
             '''
@@ -77,9 +107,9 @@ class analizadorSintactico:
                         | TkId
             '''
             if len(p) == 4:
-                p[0] = p[1] + ", " +p[3]
+                p[0] = [p[1],*p[3]]
             else:
-                p[0] = p[1]
+                p[0] = [p[1]]
 
         # Secuencia de Declaraciones        
         def p_seqDeclare(p):
@@ -87,7 +117,16 @@ class analizadorSintactico:
                 seqDeclare : declaration TkSemicolon declaration
                            | seqDeclare TkSemicolon declaration
             '''
-            p[0] = ["Sequencing", p[1], p[3]]
+            #print([*p[1],*p[3]])
+            
+            for i in p[3]:
+                if p[1].get(i)!= None:
+                    raise(Exception("error de sintaxis WIP"))
+                
+                p[1][i] = p[3][i]
+
+            p[0] = p[1] 
+            
         
         # Tipos de Datos
         def p_type(p):
@@ -125,7 +164,10 @@ class analizadorSintactico:
                 sequencing : instruction TkSemicolon instruction
                            | sequencing TkSemicolon instruction
             '''
-            p[0] = ["Sequencing", p[1],p[3]]
+            #p[0] = ["Sequencing", p[1],p[3]]
+            p[0] = nodito("Sequencing",[p[1], p[3]])
+            p[0].sons[0].father = p[0]
+            p[0].sons[1].father = p[0]
         
         # Instruccion Print
         def p_instPrint(p):
@@ -141,8 +183,8 @@ class analizadorSintactico:
             '''
                 instSkip : TkSkip
             '''
-            
-            p[0] = ["skip"]
+            print("entre a skip")
+            p[0] = nodito("Skip",[])
         
         # Instruccion Concatenacion
         def p_instConcat(p):
@@ -157,7 +199,7 @@ class analizadorSintactico:
             '''
             printAble : TkString
             '''
-            p[0] = f"String: {p[1]}"
+            p[0] = ["String", {p[1]}]
         
         # Sentencia Imprimible de Expresiones
         def p_printeAble2(p):
@@ -173,7 +215,7 @@ class analizadorSintactico:
                          | arrayIni TkComma exp
             '''
             p[0] = ["Comma", p[1], p[3]]
-        
+            
         # Instruccion de Asignacion
         def p_instAsig(p):
             '''
@@ -181,7 +223,18 @@ class analizadorSintactico:
                          | TkId TkAsig arrayIni
                          | TkId TkAsig modArray
             '''
-            p[0] = ["Asig",f"Ident: {p[1]}",p[3]]
+            #p[0] = ["Asig",["Ident",p[1]],p[3]]
+            for i in symbolTable:
+                if i.get(p[1]) != None:
+                    if i[p[1]] != p[3].type:
+                        raise(Exception("Error de tipo WIP"))
+                    
+                    p[0] = nodito("Asig",[noditoExpresion("Ident",[nodito(p[1],[])],i[p[1]]),p[3]])    
+                    return
+            
+            raise(Exception("Error en el ID WIP"))
+
+            
         
         # Generalizacion de instrucciones
         def p_instruction(p):
@@ -201,7 +254,7 @@ class analizadorSintactico:
             '''
                 consArray : TkId TkOBracket exp TkCBracket
             '''
-            p[0] = ["ReadArray",f"Ident: {p[1]}", p[3]]
+            p[0] = ["ReadArray",["Ident", {p[1]}], p[3]]
 
         def p_consArray1(p):
             '''
@@ -224,7 +277,7 @@ class analizadorSintactico:
             '''
                 finish : TkId TkOpenPar exp TkTwoPoints exp TkClosePar
             '''
-            p[0] = ["WriteArray",f"Ident: {p[1]}",["TwoPoints",p[3],p[5]]]
+            p[0] = ["WriteArray",["Ident", {p[1]}],["TwoPoints",p[3],p[5]]]
         
         # Gramatica de los Operadores Binarios
         def p_opBin(p):
@@ -232,26 +285,39 @@ class analizadorSintactico:
                 exp : exp TkPlus exp
                     | exp TkMinus exp
                     | exp TkMult exp
-                    | exp TkAnd exp
+            '''
+            if p[1].type != "int" or p[3].type != "int": raise(Exception("Error con las expreciones de enteros"))
+            
+            if p[2] == "+":
+                #p[0] = ["Minus",p[1],p[3]]
+                p[0] = noditoExpresion("Plus",[p[1],p[3]],"int")
+            elif p[2] == "-":
+                #p[0] = ["Minus",p[1],p[3]]
+                p[0] = noditoExpresion("Minus",[p[1],p[3]],"int")
+            elif p[2] == "*":
+                #p[0] = ["Mult",p[1],p[3]]
+                p[0] = noditoExpresion("Mult",[p[1],p[3]],"int")
+        
+        def p_opBin2(p):
+            '''
+                exp : exp TkAnd exp
                     | exp TkOr exp
-                    | exp TkLess exp
+            '''
+            if p[2] == "/\\":
+                p[0] = ["And",p[1],p[3]]
+            elif p[2] == "\\/":
+                p[0] = ["Or",p[1],p[3]]
+        
+        def p_opBin3(p):
+            '''
+                exp : exp TkLess exp
                     | exp TkLeq exp
                     | exp TkGeq exp
                     | exp TkGreater exp
                     | exp TkEqual exp
                     | exp TkNEqual exp
             '''
-            if p[2] == "+":
-                p[0] = ["Plus",p[1],p[3]]
-            elif p[2] == "-":
-                p[0] = ["Minus",p[1],p[3]]
-            elif p[2] == "*":
-                p[0] = ["Mult",p[1],p[3]]
-            elif p[2] == "/\\":
-                p[0] = ["And",p[1],p[3]]
-            elif p[2] == "\\/":
-                p[0] = ["Or",p[1],p[3]]
-            elif p[2] == "<":
+            if p[2] == "<":
                 p[0] = ["Less",p[1],p[3]]
             elif p[2] == "<=":
                 p[0] = ["Leq",p[1],p[3]]
@@ -272,7 +338,11 @@ class analizadorSintactico:
                     | consArray
             '''
             if len(p) == 3:
-                p[0] = ["Not",p[2]]
+                #p[0] = ["Not",p[2]]
+                if p[2].type != "bool":
+                    raise(Exception("Error en Not WIP"))
+                    
+                p[0] = noditoExpresion("Not",[p[2]],"bool")
             elif len(p) == 4:
                 p[0] = p[2]
             else: 
@@ -281,29 +351,49 @@ class analizadorSintactico:
         # Definicion de las estructuras de los literales
         def p_literales(p):
             '''
-                exp : TkNum
-                    | TkTrue
-                    | TkFalse
-                    | TkMinus exp %prec UMinus
+                exp : TkMinus exp %prec UMinus
             '''
-            if len(p) == 2:
-                p[0] = "Literal: " + p[1]
-            else:
-                p[0] = ["Minus", p[2]]
+            #p[0] = ["Minus", p[2]]
+            if p[2].type != "int":
+                raise(Exception("Error en minus WIP"))
+
+            p[0] = noditoExpresion("Minus",[p[2]],"int")
+            
+        def p_literales1(p):
+            '''
+                exp : TkNum
+            '''
+            #p[0] = ["Literal", p[1]]
+            p[0] = noditoExpresion("Literal",[nodito(p[1],[])],"int")
+
+        def p_literales2(p):
+            '''
+                exp : TkTrue
+                    | TkFalse
+            '''
+            #p[0] = ["Literal", p[1]]
+            p[0] = noditoExpresion("Literal",[nodito(p[1],[])],"bool")
         
         # Definicion de las estructuras de las variables (ids)
         def p_id(p):
             '''
                 exp : TkId 
             '''        
-            p[0] = f"Ident: {p[1]}"
-
+            #p[0] = ["Ident",p[1]]
+            
+            for i in symbolTable:
+                if i.get(p[1]) != None:
+                    p[0] = noditoExpresion("Ident",[nodito(p[1],[])],i[p[1]])
+                    return
+            
+            raise(Exception("Error en el ID WIP"))
+        
         # Gramatica del bucle for
         def p_instFor(p):
             '''
                 instFor : TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
             '''
-            p[0] = ["For",["In",f"Ident: {p[2]}",["To", p[4], p[6]]],p[8]]
+            p[0] = ["For",["In",["Ident",p[2]],["To", p[4], p[6]]],p[8]]
         
         # Gramatica de la instruccion de seleccion if
         def p_instIf(p):
@@ -359,42 +449,58 @@ class analizadorSintactico:
         parser = yacc.yacc()
         return parser
     
+    
+    
+    
+    
+    
     # Se imprime el AST
-    def  imprimir_ast(self):
-        self.imprimir_ast_rec(self.ast,0)
     
-    # Accion Recursiva de impresion sobre el AST
-    def imprimir_ast_rec(self, ast, lvl):
-        if type(ast) == str:
-            print("-"*lvl +ast)
-        elif type(ast) == list:
-            i = 1
-            print("-"*lvl +ast[0])
-            while i < len(ast):
-                self.imprimir_ast_rec(ast[i],lvl+1)
-                i += 1
-        else:
-            pass
-            #print("WIP")
+    def imprimir_ast(self):
+        self.ast.print(0)
     
-    # Retorna el AST asociado
-    def obtener_ast(self):
-        return self.ast
+    # def  imprimir_ast(self):
+    #     print("#################### ORIGINAL #######################")
+    #     print(self.ast)
+    #     print("########################### EXTENDIDO ####################")
+    #     astExt = crear_ast_extendido(self.ast)
+    #     imprimir_ast_extendido(astExt.sons[0])
+        
+    # def  imprimir_ast(self):
+    #     self.imprimir_ast_rec(self.ast,0)
     
-    # Se convierte el AST en String 
-    def ast_to_string(self):
-        return self.ast_to_string_rec(self.ast,0)
+    # # Accion Recursiva de impresion sobre el AST
+    # def imprimir_ast_rec(self, ast, lvl):
+    #     if type(ast) != list:
+    #         print("-"*lvl +str(ast))
+    #     elif type(ast) == list:
+    #         i = 1
+    #         print("-"*lvl + str(ast[0]))
+    #         while i < len(ast):
+    #             self.imprimir_ast_rec(ast[i],lvl+1)
+    #             i += 1
+    #     else:
+    #         pass
+    #         #print("WIP")
     
-    # Accion recursiva de conversion a string sobre el AST
-    def ast_to_string_rec(self,ast,lvl):
-        if type(ast) == str:
-            return "-"*lvl + ast
-        elif type(ast) == list:
-            i = 1
-            resultado = "-"*lvl + ast[0]
-            while i < len(ast):
-                resultado += "\n" + self.ast_to_string_rec(ast[i],lvl+1)
-                i += 1
-            return resultado
-        else:
-            print("WIP")
+    # # Retorna el AST asociado
+    # def obtener_ast(self):
+    #     return self.ast
+    
+    # # Se convierte el AST en String 
+    # def ast_to_string(self):
+    #     return self.ast_to_string_rec(self.ast,0)
+    
+    # # Accion recursiva de conversion a string sobre el AST
+    # def ast_to_string_rec(self,ast,lvl):
+    #     if type(ast) == str:
+    #         return "-"*lvl + ast
+    #     elif type(ast) == list:
+    #         i = 1
+    #         resultado = "-"*lvl + ast[0]
+    #         while i < len(ast):
+    #             resultado += "\n" + self.ast_to_string_rec(ast[i],lvl+1)
+    #             i += 1
+    #         return resultado
+    #     else:
+    #         print("WIP")

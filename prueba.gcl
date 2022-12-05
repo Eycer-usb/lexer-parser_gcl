@@ -1,0 +1,10 @@
+|[
+    declare
+        x, y, p : int;
+        z : array[2..3]
+    x := 1
+]|
+
+
+
+
