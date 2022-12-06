@@ -1,4 +1,3 @@
-
 import ply.yacc as yacc
 import re
 from src.AnalizadorSemantico import *
@@ -143,17 +142,29 @@ class analizadorSintactico:
                      | TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket
                      | TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket
             '''
+            # if len(p) == 2:
+            #     p[0] = p[1]
+            # elif len(p) == 7:
+            #      p[0] = p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[5] + p[6]
+            # elif len(p) == 9:
+            #     p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: -" + p[7] + p[8]
+            # else:
+            #     if p[3] == "-":
+            #         p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: " + p[6] + p[7]
+            #     else:
+            #         p[0] =  p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[6] + p[7]
+
             if len(p) == 2:
                 p[0] = p[1]
             elif len(p) == 7:
-                 p[0] = p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[5] + p[6]
+                 p[0] = p[1] + p[2] + p[3] + p[4] + p[5] + p[6]
             elif len(p) == 9:
-                p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: -" + p[7] + p[8]
+                p[0] =  p[1] + p[2] + "-" + p[4] + p[5] + "-" + p[7] + p[8]
             else:
                 if p[3] == "-":
-                    p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: " + p[6] + p[7]
+                    p[0] =  p[1] + p[2] + "-" + p[4] + p[5] + p[6] + p[7]
                 else:
-                    p[0] =  p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[6] + p[7]
+                    p[0] =  p[1] + p[2] + p[3] + p[4] + p[6] + p[7]
 
         # Estructura de los bloques de codigo
         def p_code(p):
@@ -170,6 +181,7 @@ class analizadorSintactico:
                            | sequencing TkSemicolon instruction
             '''
             #p[0] = ["Sequencing", p[1],p[3]]
+            
             p[0] = nodito("Sequencing",[p[1], p[3]])
             p[0].sons[0].father = p[0]
             p[0].sons[1].father = p[0]
@@ -180,15 +192,13 @@ class analizadorSintactico:
                 instPrint : TkPrint printAble
                           | TkPrint instConcat
             '''
-            
-            p[0] = ["Print", p[2]]
+            p[0] = nodito('Print', [p[2]], [])
 
         # Instruccion Skip
         def p_instSkip(p):
             '''
                 instSkip : TkSkip
             '''
-            print("entre a skip")
             p[0] = nodito("Skip",[])
         
         # Instruccion Concatenacion
@@ -217,32 +227,39 @@ class analizadorSintactico:
         def p_arrayIni(p):
             '''
                 arrayIni : exp TkComma exp
-                         | arrayIni TkComma exp
-            '''
-            p[0] = ["Comma", p[1], p[3]]
+            ''' 
+
+            if p[1].type != p[3].type: raise(Exception("Error de tipo con el Array")) 
+            p[0] = noditoComma("Comma", sons= [p[1], p[3]],type = p[1].type, length = 2)
+
+        def p_arrayIni2(p):
+            """
+                arrayIni : arrayIni TkComma exp 
+            """
+            if p[1].type != p[3].type: raise(Exception("Error de tipo con el Array"))
+            p[0] = noditoComma("Comma", sons= [p[1], p[3]],type =p[1].type, length = p[1].lenght + 1)
             
         # Instruccion de Asignacion
         def p_instAsig(p):
             '''
-                instAsig : TkId TkAsig exp
-                         | TkId TkAsig arrayIni
+                instAsig : TkId TkAsig arrayIni
+                         | TkId TkAsig exp 
                          | TkId TkAsig modArray
             '''
             #p[0] = ["Asig",["Ident",p[1]],p[3]]
-            #print(symbolTables)
+            #print(symbolTables
+
             for i in symbolTables:
                 if i.get(p[1]) != None:
-                    if i[p[1]] != p[3].type:
+                    #print(p[3])
+                    if "array" in i[p[1]] and p[3].type == 'int':
+                        p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
+                    elif i[p[1]] != p[3].type:
                         raise(Exception("Error de tipo WIP"))
-                    
-                    p[0] = nodito("Asig",[
-                        noditoIdentificador("Ident", p[1], i[p[1]])
-                        ] )    
-                    return
-            
-            raise(Exception("Error en el ID WIP"))
-
-            
+                    else:
+                        p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
+                    return 
+            raise(Exception("Error en el ID WIP"))            
         
         # Generalizacion de instrucciones
         def p_instruction(p):
@@ -262,14 +279,30 @@ class analizadorSintactico:
             '''
                 consArray : TkId TkOBracket exp TkCBracket
             '''
-            p[0] = ["ReadArray",["Ident", {p[1]}], p[3]]
+            if p[3].type != "int": raise(Exception("Error con el tipo en la lectura de array WIP"))
+
+            for i in symbolTables:
+                if i.get(p[1]) == None:
+                        raise(Exception("Error de tipo WIP"))
+                else:
+                    tipo = i[p[1]]
+                    p[0] = noditoExpresion("ReadArray",[
+                        noditoIdentificador("Ident", key = p[1] , type= tipo ), p[3]
+                        ],"int") 
+                return 
+            raise(Exception("Error en el ID WIP")) 
+        
+            #p[0] = ["ReadArray",["Ident", {p[1]}], p[3]]
 
         def p_consArray1(p):
             '''
                 consArray : modArray TkOBracket exp TkCBracket
             '''
-            p[0] = ["ReadArray", p[1], p[3]]
-
+            #p[0] = ["ReadArray", p[1], p[3]]
+            if p[3].type != "int": raise(Exception("Error con el tipo en la lectura de array WIP"))
+            
+            p[0] = noditoExpresion("ReadArray",[p[1], p[3]],p[1].type)
+        
         def p_modArray(p):
             '''
                 modArray : modArray TkOpenPar exp TkTwoPoints exp TkClosePar
@@ -278,14 +311,26 @@ class analizadorSintactico:
             '''
             if len(p) == 2: 
                 p[0] = p[1]
-            else:         
-                p[0] = ["WriteArray",p[1], ["TwoPoints", p[3], p[5]]]
+            else:
+                if p[3].type != "int" and p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP"))         
+                #p[0] = ["WriteArray",p[1], ["TwoPoints", p[3], p[5]]]
+                p[0] = noditoExpresion("WriteArray",[p[1], nodito("TwoPoints", [p[3], p[5]])],p[1].type)
+                
         
         def p_modArray1(p):
             '''
                 finish : TkId TkOpenPar exp TkTwoPoints exp TkClosePar
             '''
-            p[0] = ["WriteArray",["Ident", {p[1]}],["TwoPoints",p[3],p[5]]]
+            if p[3].type != "int" and p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP")) 
+            #p[0] = ["WriteArray",["Ident", {p[1]}],["TwoPoints",p[3],p[5]]]
+            for i in symbolTables:
+                if i.get(p[1])!= None:
+                    if "array" in i[p[1]]:
+                        p[0] = noditoExpresion("WriteArray",[noditoIdentificador("Ident",p[1],i[p[1]]), nodito("TwoPoints", [p[3], p[5]])],"int")
+                    else:
+                        raise(Exception("Error con el tipo del ID en WriteArray WIP"))
+                
+                raise(Exception("Error con el ID en WriteArray WIP"))
         
         # Gramatica de los Operadores Binarios
         def p_opBin(p):
@@ -311,10 +356,14 @@ class analizadorSintactico:
                 exp : exp TkAnd exp
                     | exp TkOr exp
             '''
+            if p[1].type != "bool" or p[3].type != "bool": raise(Exception("Error con las expreciones de booleanas"))
+
             if p[2] == "/\\":
-                p[0] = ["And",p[1],p[3]]
+                #p[0] = ["And",p[1],p[3]]
+                p[0] = noditoExpresion("And",[p[1],p[3]],"bool")
             elif p[2] == "\\/":
-                p[0] = ["Or",p[1],p[3]]
+                #p[0] = ["Or",p[1],p[3]]
+                p[0] = noditoExpresion("Or",[p[1],p[3]],"bool")
         
         def p_opBin3(p):
             '''
@@ -322,21 +371,36 @@ class analizadorSintactico:
                     | exp TkLeq exp
                     | exp TkGeq exp
                     | exp TkGreater exp
-                    | exp TkEqual exp
+            '''
+            if p[1].type != "int" or p[3].type != "int": raise(Exception("Error con las comparaciones enteras"))
+            
+            if p[2] == "<":
+                #p[0] = ["Less",p[1],p[3]]
+                p[0] = noditoExpresion("Less",[p[1],p[3]],"bool")
+            elif p[2] == "<=":
+                #p[0] = ["Leq",p[1],p[3]]
+                p[0] = noditoExpresion("Leq",[p[1],p[3]],"bool")
+            elif p[2] == ">=":
+                #p[0] = ["Geq",p[1],p[3]]
+                p[0] = noditoExpresion("Geq",[p[1],p[3]],"bool")
+            elif p[2] == ">":
+                #p[0] = ["Greater",p[1],p[3]]
+                p[0] = noditoExpresion("Greater",[p[1],p[3]],"bool")
+
+        def p_opBin4(p):
+            '''
+                exp : exp TkEqual exp
                     | exp TkNEqual exp
             '''
-            if p[2] == "<":
-                p[0] = ["Less",p[1],p[3]]
-            elif p[2] == "<=":
-                p[0] = ["Leq",p[1],p[3]]
-            elif p[2] == ">=":
-                p[0] = ["Geq",p[1],p[3]]
-            elif p[2] == ">":
-                p[0] = ["Greater",p[1],p[3]]
-            elif p[2] == "==":
-                p[0] = ["Equal",p[1],p[3]]
+            if p[1].type != p[3].type: raise(Exception("Error en Equal o Not equal"))
+
+            if p[2] == "==":
+                #p[0] = ["Equal",p[1],p[3]]
+                p[0] = noditoExpresion("Equal",[p[1],p[3]],"bool")
             elif p[2] == "!=":
-                p[0] = ["NotEqual",p[1],p[3]]
+                #p[0] = ["NotEqual",p[1],p[3]]
+                p[0] = noditoExpresion("NotEqual",[p[1],p[3]],"bool")
+
         
         # Generalizacion de la gramatica de las expresiones
         def p_exp(p):
@@ -372,7 +436,7 @@ class analizadorSintactico:
                 exp : TkNum
             '''
             #p[0] = ["Literal", p[1]]
-            p[0] = noditoExpresion("Literal",[nodito(p[1],[])],"int")
+            p[0] = noditoIdentificador("Literal",p[1],"int")
 
         def p_literales2(p):
             '''
@@ -380,7 +444,7 @@ class analizadorSintactico:
                     | TkFalse
             '''
             #p[0] = ["Literal", p[1]]
-            p[0] = noditoExpresion("Literal",[nodito(p[1],[])],"bool")
+            p[0] = noditoIdentificador("Literal", p[1], "bool")
         
         # Definicion de las estructuras de las variables (ids)
         def p_id(p):
@@ -391,7 +455,7 @@ class analizadorSintactico:
             
             for i in symbolTables:
                 if i.get(p[1]) != None:
-                    p[0] = noditoExpresion("Ident",[nodito(p[1],[])],i[p[1]])
+                    p[0] = noditoIdentificador("Ident",p[1],i[p[1]])
                     return
             
             raise(Exception("Error en el ID WIP"))
@@ -408,14 +472,16 @@ class analizadorSintactico:
             '''
                 instIf : TkIf guards TkFi
             '''
-            p[0] = ["If", p[2]]
+            #p[0] = ["If", p[2]]
+            p[0] = nodito("If", [p[2]])
 
         # Gramatica del bucle do
         def p_instDo(p):
             '''
                 instDo : TkDo guards TkOd
             '''
-            p[0] = ["Do", p[2]]
+            #p[0] = ["Do", p[2]]
+            p[0] = nodito("Do", [p[2]])
 
         # Estructura de las Guardas de las instrucciones de seleccion y bucle
         def p_guards(p):
@@ -424,7 +490,8 @@ class analizadorSintactico:
                        | then
             '''
             if len(p) != 2: 
-                p[0] = ["Guard", p[1], p[3]]
+                #p[0] = ["Guard", p[1], p[3]]
+                p[0] = nodito("Guard", [p[1], p[3]])
             else:
                 p[0] = p[1]
 
@@ -433,7 +500,8 @@ class analizadorSintactico:
             '''
                 then : exp TkArrow code
             '''
-            p[0] = ["Then", p[1],p[3]]
+            #p[0] = ["Then", p[1],p[3]]
+            p[0] = nodito("Then", (p[1],p[3]))
 
         def p_ignorados(p):
             '''

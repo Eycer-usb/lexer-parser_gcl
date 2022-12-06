@@ -33,8 +33,8 @@ Rule 27    printAble -> TkString
 Rule 28    printAble -> exp
 Rule 29    arrayIni -> exp TkComma exp
 Rule 30    arrayIni -> arrayIni TkComma exp
-Rule 31    instAsig -> TkId TkAsig exp
-Rule 32    instAsig -> TkId TkAsig arrayIni
+Rule 31    instAsig -> TkId TkAsig arrayIni
+Rule 32    instAsig -> TkId TkAsig exp
 Rule 33    instAsig -> TkId TkAsig modArray
 Rule 34    instruction -> instPrint
 Rule 35    instruction -> instAsig
@@ -133,12 +133,12 @@ error                :
 Nonterminals, with rules where they appear
 
 DeclaList            : 7 8
-arrayIni             : 30 32
+arrayIni             : 30 31
 code                 : 3 4 65 70
 consArray            : 59
 declaration          : 5 10 10 11
 declare              : 2 3
-exp                  : 28 29 29 30 31 41 42 43 43 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 56 56 57 58 60 65 65 70
+exp                  : 28 29 29 30 32 41 42 43 43 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 56 56 57 58 60 65 65 70
 finish               : 44
 guards               : 66 67 68
 ignorados            : 74
@@ -207,8 +207,8 @@ state 3
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock
@@ -256,8 +256,8 @@ state 4
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock
@@ -471,8 +471,8 @@ state 16
 
 state 17
 
-    (31) instAsig -> TkId . TkAsig exp
-    (32) instAsig -> TkId . TkAsig arrayIni
+    (31) instAsig -> TkId . TkAsig arrayIni
+    (32) instAsig -> TkId . TkAsig exp
     (33) instAsig -> TkId . TkAsig modArray
 
     TkAsig          shift and go to state 45
@@ -682,8 +682,8 @@ state 29
     (40) instruction -> . instDo
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock
@@ -722,8 +722,8 @@ state 30
     (40) instruction -> . instDo
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock
@@ -1128,9 +1128,11 @@ state 44
 
 state 45
 
-    (31) instAsig -> TkId TkAsig . exp
-    (32) instAsig -> TkId TkAsig . arrayIni
+    (31) instAsig -> TkId TkAsig . arrayIni
+    (32) instAsig -> TkId TkAsig . exp
     (33) instAsig -> TkId TkAsig . modArray
+    (29) arrayIni -> . exp TkComma exp
+    (30) arrayIni -> . arrayIni TkComma exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1150,8 +1152,6 @@ state 45
     (62) exp -> . TkTrue
     (63) exp -> . TkFalse
     (64) exp -> . TkId
-    (29) arrayIni -> . exp TkComma exp
-    (30) arrayIni -> . arrayIni TkComma exp
     (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
     (44) modArray -> . finish
     (41) consArray -> . TkId TkOBracket exp TkCBracket
@@ -1166,8 +1166,8 @@ state 45
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 78
-    arrayIni                       shift and go to state 79
+    arrayIni                       shift and go to state 78
+    exp                            shift and go to state 79
     modArray                       shift and go to state 80
     consArray                      shift and go to state 38
     finish                         shift and go to state 44
@@ -2164,7 +2164,22 @@ state 77
 
 state 78
 
-    (31) instAsig -> TkId TkAsig exp .
+    (31) instAsig -> TkId TkAsig arrayIni .
+    (30) arrayIni -> arrayIni . TkComma exp
+
+    TkSemicolon     reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkCBlock        reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkFi            reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkGuard         reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkOd            reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkRof           reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
+    TkComma         shift and go to state 111
+
+
+state 79
+
+    (32) instAsig -> TkId TkAsig exp .
+    (29) arrayIni -> exp . TkComma exp
     (46) exp -> exp . TkPlus exp
     (47) exp -> exp . TkMinus exp
     (48) exp -> exp . TkMult exp
@@ -2176,14 +2191,14 @@ state 78
     (54) exp -> exp . TkGreater exp
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
-    (29) arrayIni -> exp . TkComma exp
 
-    TkSemicolon     reduce using rule 31 (instAsig -> TkId TkAsig exp .)
-    TkCBlock        reduce using rule 31 (instAsig -> TkId TkAsig exp .)
-    TkFi            reduce using rule 31 (instAsig -> TkId TkAsig exp .)
-    TkGuard         reduce using rule 31 (instAsig -> TkId TkAsig exp .)
-    TkOd            reduce using rule 31 (instAsig -> TkId TkAsig exp .)
-    TkRof           reduce using rule 31 (instAsig -> TkId TkAsig exp .)
+    TkSemicolon     reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkCBlock        reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkFi            reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkGuard         reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkOd            reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkRof           reduce using rule 32 (instAsig -> TkId TkAsig exp .)
+    TkComma         shift and go to state 112
     TkPlus          shift and go to state 60
     TkMinus         shift and go to state 61
     TkMult          shift and go to state 62
@@ -2195,21 +2210,6 @@ state 78
     TkGreater       shift and go to state 68
     TkEqual         shift and go to state 69
     TkNEqual        shift and go to state 70
-    TkComma         shift and go to state 111
-
-
-state 79
-
-    (32) instAsig -> TkId TkAsig arrayIni .
-    (30) arrayIni -> arrayIni . TkComma exp
-
-    TkSemicolon     reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkCBlock        reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkFi            reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkGuard         reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkOd            reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkRof           reduce using rule 32 (instAsig -> TkId TkAsig arrayIni .)
-    TkComma         shift and go to state 112
 
 
 state 80
@@ -2340,8 +2340,8 @@ state 84
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock
@@ -3231,7 +3231,7 @@ state 110
 
 state 111
 
-    (29) arrayIni -> exp TkComma . exp
+    (30) arrayIni -> arrayIni TkComma . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -3272,7 +3272,7 @@ state 111
 
 state 112
 
-    (30) arrayIni -> arrayIni TkComma . exp
+    (29) arrayIni -> exp TkComma . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -3513,41 +3513,6 @@ state 120
 
 state 121
 
-    (29) arrayIni -> exp TkComma exp .
-    (46) exp -> exp . TkPlus exp
-    (47) exp -> exp . TkMinus exp
-    (48) exp -> exp . TkMult exp
-    (49) exp -> exp . TkAnd exp
-    (50) exp -> exp . TkOr exp
-    (51) exp -> exp . TkLess exp
-    (52) exp -> exp . TkLeq exp
-    (53) exp -> exp . TkGeq exp
-    (54) exp -> exp . TkGreater exp
-    (55) exp -> exp . TkEqual exp
-    (56) exp -> exp . TkNEqual exp
-
-    TkComma         reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkSemicolon     reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkCBlock        reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkFi            reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkGuard         reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkOd            reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkRof           reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
-
-
-state 122
-
     (30) arrayIni -> arrayIni TkComma exp .
     (46) exp -> exp . TkPlus exp
     (47) exp -> exp . TkMinus exp
@@ -3568,6 +3533,41 @@ state 122
     TkGuard         reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
     TkOd            reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
     TkRof           reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
+    TkPlus          shift and go to state 60
+    TkMinus         shift and go to state 61
+    TkMult          shift and go to state 62
+    TkAnd           shift and go to state 63
+    TkOr            shift and go to state 64
+    TkLess          shift and go to state 65
+    TkLeq           shift and go to state 66
+    TkGeq           shift and go to state 67
+    TkGreater       shift and go to state 68
+    TkEqual         shift and go to state 69
+    TkNEqual        shift and go to state 70
+
+
+state 122
+
+    (29) arrayIni -> exp TkComma exp .
+    (46) exp -> exp . TkPlus exp
+    (47) exp -> exp . TkMinus exp
+    (48) exp -> exp . TkMult exp
+    (49) exp -> exp . TkAnd exp
+    (50) exp -> exp . TkOr exp
+    (51) exp -> exp . TkLess exp
+    (52) exp -> exp . TkLeq exp
+    (53) exp -> exp . TkGeq exp
+    (54) exp -> exp . TkGreater exp
+    (55) exp -> exp . TkEqual exp
+    (56) exp -> exp . TkNEqual exp
+
+    TkComma         reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkSemicolon     reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkCBlock        reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkFi            reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkGuard         reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkOd            reduce using rule 29 (arrayIni -> exp TkComma exp .)
+    TkRof           reduce using rule 29 (arrayIni -> exp TkComma exp .)
     TkPlus          shift and go to state 60
     TkMinus         shift and go to state 61
     TkMult          shift and go to state 62
@@ -3786,8 +3786,8 @@ state 133
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig exp
-    (32) instAsig -> . TkId TkAsig arrayIni
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
     (33) instAsig -> . TkId TkAsig modArray
     (24) instSkip -> . TkSkip
     (2) instBlock -> . TkOBlock declare TkCBlock

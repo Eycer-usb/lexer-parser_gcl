@@ -2,15 +2,15 @@
     declare
         x, y, p : int;
         z : array[2..3]
-    x := 1;
-    |[
-        declare
-            x, u, w : int;
-            s : array[2..3]
-        w := 1
-    ]|
+    z := 1,2;
+    x := 3+5;
+    x := z[y] + 1;
+    
+    do ! (x == y) -->
+        x := x-3
+    [] x != y -->
+        print z
+    od
+
 ]|
-
-
-
 

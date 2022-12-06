@@ -46,7 +46,18 @@ class noditoIdentificador(nodito):
 
 
 class noditoExpresion(nodito):
-    def __init__(self, name, sons, type,father=None) -> None:
+    def __init__(self, name, sons, type, father=None) -> None:
         super().__init__(name, sons, father)
         self.type = type
     
+    def __str__(self) -> str:
+        return f"{self.name} | type: {self.type}"
+    
+class noditoComma(nodito):
+    def __init__(self, name, type, length, sons=[], father=None):
+        super().__init__(name, sons, father)
+        self.type = type
+        self.length = length
+    def __str__(self) ->str:
+        return f"{self.name} | type: {self.type} with length={self.length}"
+
