@@ -1,5 +1,5 @@
 class nodito:
-    def __init__(self,name, sons, father = None) -> None:
+    def __init__(self, name, sons, father = None) -> None:
         self.name = name
         self.sons = sons
     
@@ -20,9 +20,30 @@ class noditoBlock(nodito):
 
 
 class noditoDeclare(nodito):
-    def __init__(self, name, sons, father=None) -> None:
+    def __init__(self, name, sons, tabla, father=None) -> None:
         super().__init__(name, sons, father)
-        self.symbolTable = {}
+        self.symbolTable = tabla.copy()
+
+        # le agregamos al no de declaracion los nodos con los nombres
+
+        for key in self.symbolTable[0].keys():
+            type = self.symbolTable[0][key]
+            self.sons.append( 
+                noditoIdentificador("variable", key, type, [], self)
+                )
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+class noditoIdentificador(nodito):
+    def __init__(self, name, key, type, sons=[], father=None):
+        super().__init__(name, sons, father)
+        self.type = type
+        self.key = key
+    def __str__(self) ->str:
+        return f"{self.name}: {self.key} | type: {self.type}"
+
+
 
 class noditoExpresion(nodito):
     def __init__(self, name, sons, type,father=None) -> None:

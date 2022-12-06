@@ -2,7 +2,13 @@
     declare
         x, y, p : int;
         z : array[2..3]
-    x := 1
+    x := 1;
+    |[
+        declare
+            x, u, w : int;
+            s : array[2..3]
+        w := 1
+    ]|
 ]|
 
 

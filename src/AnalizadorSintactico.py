@@ -35,11 +35,11 @@ class analizadorSintactico:
         
         start = 'program'
         
-        global symbolTable
-        symbolTable = []
+        global symbolTables
+        symbolTables = []
 
-        # symbolTable[0] = Direccion a la tabla anterior
-        # symbolTable[1] = valor de la tabla actual
+        # symbolTables[0] = Direccion a la tabla anterior
+        # symbolTables[1] = valor de la tabla actual
 
         def p_program(p):
             '''
@@ -57,7 +57,7 @@ class analizadorSintactico:
                       | TkOBlock code TkCBlock
             '''
 
-            global symbolTable
+            global symbolTables
 
             if len(p) == 5:
                 #p[0] = ["Block", p[2], p[3]]
@@ -69,7 +69,7 @@ class analizadorSintactico:
                 p[0] = noditoBlock("Block",[p[2]])
                 p[0].sons[0].father = p[0]
             
-            symbolTable.pop(0)
+            symbolTables.pop(0)
 
         # Sentencia de Declaracion
         def p_declare(p):
@@ -79,26 +79,32 @@ class analizadorSintactico:
             '''
             #p[0] = ["Declare",p[2]]
             
-            p[0] = noditoDeclare("Symbols Table",[])
+            global symbolTables
 
-            global symbolTable
-            if len(symbolTable) == 0 :
-                symbolTable = [p[2]]
+            if len(symbolTables) == 0 :
+                symbolTables = [p[2]]
             else:
-                symbolTable = [p[2],*symbolTable]
+                symbolTables = [p[2],*symbolTables]
             
-            p[0].symbolTable = symbolTable
+            p[0] = noditoDeclare("Symbols Table",[], symbolTables)
             
         # Instruccion de Declaracion
         def p_declaration(p):
             '''
                 declaration : DeclaList TkTwoPoints type
             '''
+
+            global symbolTables
             tabla = {}
+
+            # Se agregan las nuevas declaraciones y se 
+            # enmascara si es necesario
             for i in p[1]:
                 tabla[i] = p[3]
             
             p[0] = tabla
+
+
         # Lista de Declaraciones
         def p_decaList(p):
             '''
@@ -223,12 +229,15 @@ class analizadorSintactico:
                          | TkId TkAsig modArray
             '''
             #p[0] = ["Asig",["Ident",p[1]],p[3]]
-            for i in symbolTable:
+            #print(symbolTables)
+            for i in symbolTables:
                 if i.get(p[1]) != None:
                     if i[p[1]] != p[3].type:
                         raise(Exception("Error de tipo WIP"))
                     
-                    p[0] = nodito("Asig",[noditoExpresion("Ident",[nodito(p[1],[])],i[p[1]]),p[3]])    
+                    p[0] = nodito("Asig",[
+                        noditoIdentificador("Ident", p[1], i[p[1]])
+                        ] )    
                     return
             
             raise(Exception("Error en el ID WIP"))
@@ -380,7 +389,7 @@ class analizadorSintactico:
             '''        
             #p[0] = ["Ident",p[1]]
             
-            for i in symbolTable:
+            for i in symbolTables:
                 if i.get(p[1]) != None:
                     p[0] = noditoExpresion("Ident",[nodito(p[1],[])],i[p[1]])
                     return
