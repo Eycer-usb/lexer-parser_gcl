@@ -40,9 +40,9 @@ Rule 34    instruction -> instPrint
 Rule 35    instruction -> instAsig
 Rule 36    instruction -> instSkip
 Rule 37    instruction -> instBlock
-Rule 38    instruction -> instFor
-Rule 39    instruction -> instIf
-Rule 40    instruction -> instDo
+Rule 38    instruction -> instIf
+Rule 39    instruction -> instDo
+Rule 40    instruction -> instFor
 Rule 41    consArray -> TkId TkOBracket exp TkCBracket
 Rule 42    consArray -> modArray TkOBracket exp TkCBracket
 Rule 43    modArray -> modArray TkOpenPar exp TkTwoPoints exp TkClosePar
@@ -67,54 +67,55 @@ Rule 61    exp -> TkNum
 Rule 62    exp -> TkTrue
 Rule 63    exp -> TkFalse
 Rule 64    exp -> TkId
-Rule 65    instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-Rule 66    instIf -> TkIf guards TkFi
-Rule 67    instDo -> TkDo guards TkOd
-Rule 68    guards -> guards TkGuard then
-Rule 69    guards -> then
-Rule 70    then -> exp TkArrow code
-Rule 71    ignorados -> TkComment
-Rule 72    ignorados -> TkSpace
-Rule 73    ignorados -> TkNewLine
-Rule 74    ignorados -> ignorados
+Rule 65    instFor -> TkFor range TkArrow code TkRof
+Rule 66    range -> TkId TkIn exp TkTo exp
+Rule 67    instIf -> TkIf guards TkFi
+Rule 68    instDo -> TkDo guards TkOd
+Rule 69    guards -> guards TkGuard then
+Rule 70    guards -> then
+Rule 71    then -> exp TkArrow code
+Rule 72    ignorados -> TkComment
+Rule 73    ignorados -> TkSpace
+Rule 74    ignorados -> TkNewLine
+Rule 75    ignorados -> ignorados
 
 Terminals, with rules where they appear
 
 TkAnd                : 49
 TkArray              : 14 15 16 17
-TkArrow              : 65 70
+TkArrow              : 65 71
 TkAsig               : 31 32 33
 TkBool               : 13
 TkCBlock             : 2 3 4
 TkCBracket           : 14 15 16 17 41 42
 TkClosePar           : 43 45 58
 TkComma              : 8 29 30
-TkComment            : 71
+TkComment            : 72
 TkConcat             : 25 26
 TkDeclare            : 5 6
-TkDo                 : 67
+TkDo                 : 68
 TkEqual              : 55
 TkFalse              : 63
-TkFi                 : 66
+TkFi                 : 67
 TkFor                : 65
 TkGeq                : 53
 TkGreater            : 54
-TkGuard              : 68
-TkId                 : 8 9 31 32 33 41 45 64 65
-TkIf                 : 66
-TkIn                 : 65
+TkGuard              : 69
+TkId                 : 8 9 31 32 33 41 45 64 66
+TkIf                 : 67
+TkIn                 : 66
 TkInt                : 12
 TkLeq                : 52
 TkLess               : 51
 TkMinus              : 15 15 16 17 47 60
 TkMult               : 48
 TkNEqual             : 56
-TkNewLine            : 73
+TkNewLine            : 74
 TkNot                : 57
 TkNum                : 14 14 15 15 16 16 17 17 61
 TkOBlock             : 2 3 4
 TkOBracket           : 14 15 16 17 41 42
-TkOd                 : 67
+TkOd                 : 68
 TkOpenPar            : 43 45 58
 TkOr                 : 50
 TkPlus               : 46
@@ -123,9 +124,9 @@ TkRof                : 65
 TkSemicolon          : 10 11 20 21
 TkSkip               : 24
 TkSoForth            : 14 15 16 17
-TkSpace              : 72
+TkSpace              : 73
 TkString             : 27
-TkTo                 : 65
+TkTo                 : 66
 TkTrue               : 62
 TkTwoPoints          : 7 43 45
 error                : 
@@ -134,29 +135,30 @@ Nonterminals, with rules where they appear
 
 DeclaList            : 7 8
 arrayIni             : 30 31
-code                 : 3 4 65 70
+code                 : 3 4 65 71
 consArray            : 59
 declaration          : 5 10 10 11
 declare              : 2 3
-exp                  : 28 29 29 30 32 41 42 43 43 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 56 56 57 58 60 65 65 70
+exp                  : 28 29 29 30 32 41 42 43 43 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 56 56 57 58 60 66 66 71
 finish               : 44
-guards               : 66 67 68
-ignorados            : 74
+guards               : 67 68 69
+ignorados            : 75
 instAsig             : 35
 instBlock            : 1 37
 instConcat           : 23 26
-instDo               : 40
-instFor              : 38
-instIf               : 39
+instDo               : 39
+instFor              : 40
+instIf               : 38
 instPrint            : 34
 instSkip             : 36
 instruction          : 18 20 20 21
 modArray             : 33 42 43
 printAble            : 22 25 25 26
 program              : 0
+range                : 65
 seqDeclare           : 6 11
 sequencing           : 19 21
-then                 : 68 69
+then                 : 69 70
 type                 : 7
 
 Parsing method: LALR
@@ -200,9 +202,9 @@ state 3
     (35) instruction -> . instAsig
     (36) instruction -> . instSkip
     (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
     (20) sequencing -> . instruction TkSemicolon instruction
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
@@ -214,18 +216,18 @@ state 3
     (2) instBlock -> . TkOBlock declare TkCBlock
     (3) instBlock -> . TkOBlock declare code TkCBlock
     (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
 
     TkDeclare       shift and go to state 6
     TkPrint         shift and go to state 16
     TkId            shift and go to state 17
     TkSkip          shift and go to state 18
     TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
 
     declare                        shift and go to state 4
     code                           shift and go to state 5
@@ -235,9 +237,9 @@ state 3
     instAsig                       shift and go to state 10
     instSkip                       shift and go to state 11
     instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
 
 state 4
 
@@ -249,9 +251,9 @@ state 4
     (35) instruction -> . instAsig
     (36) instruction -> . instSkip
     (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
     (20) sequencing -> . instruction TkSemicolon instruction
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
@@ -263,18 +265,18 @@ state 4
     (2) instBlock -> . TkOBlock declare TkCBlock
     (3) instBlock -> . TkOBlock declare code TkCBlock
     (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
 
     TkCBlock        shift and go to state 22
     TkPrint         shift and go to state 16
     TkId            shift and go to state 17
     TkSkip          shift and go to state 18
     TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
 
     code                           shift and go to state 23
     instruction                    shift and go to state 7
@@ -283,9 +285,9 @@ state 4
     instAsig                       shift and go to state 10
     instSkip                       shift and go to state 11
     instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
 
 state 5
 
@@ -386,38 +388,38 @@ state 12
 
 state 13
 
-    (38) instruction -> instFor .
+    (38) instruction -> instIf .
 
-    TkSemicolon     reduce using rule 38 (instruction -> instFor .)
-    TkCBlock        reduce using rule 38 (instruction -> instFor .)
-    TkFi            reduce using rule 38 (instruction -> instFor .)
-    TkGuard         reduce using rule 38 (instruction -> instFor .)
-    TkOd            reduce using rule 38 (instruction -> instFor .)
-    TkRof           reduce using rule 38 (instruction -> instFor .)
+    TkSemicolon     reduce using rule 38 (instruction -> instIf .)
+    TkCBlock        reduce using rule 38 (instruction -> instIf .)
+    TkFi            reduce using rule 38 (instruction -> instIf .)
+    TkGuard         reduce using rule 38 (instruction -> instIf .)
+    TkOd            reduce using rule 38 (instruction -> instIf .)
+    TkRof           reduce using rule 38 (instruction -> instIf .)
 
 
 state 14
 
-    (39) instruction -> instIf .
+    (39) instruction -> instDo .
 
-    TkSemicolon     reduce using rule 39 (instruction -> instIf .)
-    TkCBlock        reduce using rule 39 (instruction -> instIf .)
-    TkFi            reduce using rule 39 (instruction -> instIf .)
-    TkGuard         reduce using rule 39 (instruction -> instIf .)
-    TkOd            reduce using rule 39 (instruction -> instIf .)
-    TkRof           reduce using rule 39 (instruction -> instIf .)
+    TkSemicolon     reduce using rule 39 (instruction -> instDo .)
+    TkCBlock        reduce using rule 39 (instruction -> instDo .)
+    TkFi            reduce using rule 39 (instruction -> instDo .)
+    TkGuard         reduce using rule 39 (instruction -> instDo .)
+    TkOd            reduce using rule 39 (instruction -> instDo .)
+    TkRof           reduce using rule 39 (instruction -> instDo .)
 
 
 state 15
 
-    (40) instruction -> instDo .
+    (40) instruction -> instFor .
 
-    TkSemicolon     reduce using rule 40 (instruction -> instDo .)
-    TkCBlock        reduce using rule 40 (instruction -> instDo .)
-    TkFi            reduce using rule 40 (instruction -> instDo .)
-    TkGuard         reduce using rule 40 (instruction -> instDo .)
-    TkOd            reduce using rule 40 (instruction -> instDo .)
-    TkRof           reduce using rule 40 (instruction -> instDo .)
+    TkSemicolon     reduce using rule 40 (instruction -> instFor .)
+    TkCBlock        reduce using rule 40 (instruction -> instFor .)
+    TkFi            reduce using rule 40 (instruction -> instFor .)
+    TkGuard         reduce using rule 40 (instruction -> instFor .)
+    TkOd            reduce using rule 40 (instruction -> instFor .)
+    TkRof           reduce using rule 40 (instruction -> instFor .)
 
 
 state 16
@@ -492,17 +494,10 @@ state 18
 
 state 19
 
-    (65) instFor -> TkFor . TkId TkIn exp TkTo exp TkArrow code TkRof
-
-    TkId            shift and go to state 46
-
-
-state 20
-
-    (66) instIf -> TkIf . guards TkFi
-    (68) guards -> . guards TkGuard then
-    (69) guards -> . then
-    (70) then -> . exp TkArrow code
+    (67) instIf -> TkIf . guards TkFi
+    (69) guards -> . guards TkGuard then
+    (70) guards -> . then
+    (71) then -> . exp TkArrow code
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -536,58 +531,67 @@ state 20
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    guards                         shift and go to state 47
-    then                           shift and go to state 48
-    exp                            shift and go to state 49
+    guards                         shift and go to state 46
+    then                           shift and go to state 47
+    exp                            shift and go to state 48
+    consArray                      shift and go to state 38
+    modArray                       shift and go to state 43
+    finish                         shift and go to state 44
+
+state 20
+
+    (68) instDo -> TkDo . guards TkOd
+    (69) guards -> . guards TkGuard then
+    (70) guards -> . then
+    (71) then -> . exp TkArrow code
+    (46) exp -> . exp TkPlus exp
+    (47) exp -> . exp TkMinus exp
+    (48) exp -> . exp TkMult exp
+    (49) exp -> . exp TkAnd exp
+    (50) exp -> . exp TkOr exp
+    (51) exp -> . exp TkLess exp
+    (52) exp -> . exp TkLeq exp
+    (53) exp -> . exp TkGeq exp
+    (54) exp -> . exp TkGreater exp
+    (55) exp -> . exp TkEqual exp
+    (56) exp -> . exp TkNEqual exp
+    (57) exp -> . TkNot exp
+    (58) exp -> . TkOpenPar exp TkClosePar
+    (59) exp -> . consArray
+    (60) exp -> . TkMinus exp
+    (61) exp -> . TkNum
+    (62) exp -> . TkTrue
+    (63) exp -> . TkFalse
+    (64) exp -> . TkId
+    (41) consArray -> . TkId TkOBracket exp TkCBracket
+    (42) consArray -> . modArray TkOBracket exp TkCBracket
+    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
+    (44) modArray -> . finish
+    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+
+    TkNot           shift and go to state 36
+    TkOpenPar       shift and go to state 37
+    TkMinus         shift and go to state 35
+    TkNum           shift and go to state 39
+    TkTrue          shift and go to state 40
+    TkFalse         shift and go to state 41
+    TkId            shift and go to state 42
+
+    guards                         shift and go to state 49
+    then                           shift and go to state 47
+    exp                            shift and go to state 48
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
 state 21
 
-    (67) instDo -> TkDo . guards TkOd
-    (68) guards -> . guards TkGuard then
-    (69) guards -> . then
-    (70) then -> . exp TkArrow code
-    (46) exp -> . exp TkPlus exp
-    (47) exp -> . exp TkMinus exp
-    (48) exp -> . exp TkMult exp
-    (49) exp -> . exp TkAnd exp
-    (50) exp -> . exp TkOr exp
-    (51) exp -> . exp TkLess exp
-    (52) exp -> . exp TkLeq exp
-    (53) exp -> . exp TkGeq exp
-    (54) exp -> . exp TkGreater exp
-    (55) exp -> . exp TkEqual exp
-    (56) exp -> . exp TkNEqual exp
-    (57) exp -> . TkNot exp
-    (58) exp -> . TkOpenPar exp TkClosePar
-    (59) exp -> . consArray
-    (60) exp -> . TkMinus exp
-    (61) exp -> . TkNum
-    (62) exp -> . TkTrue
-    (63) exp -> . TkFalse
-    (64) exp -> . TkId
-    (41) consArray -> . TkId TkOBracket exp TkCBracket
-    (42) consArray -> . modArray TkOBracket exp TkCBracket
-    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
-    (44) modArray -> . finish
-    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+    (65) instFor -> TkFor . range TkArrow code TkRof
+    (66) range -> . TkId TkIn exp TkTo exp
 
-    TkNot           shift and go to state 36
-    TkOpenPar       shift and go to state 37
-    TkMinus         shift and go to state 35
-    TkNum           shift and go to state 39
-    TkTrue          shift and go to state 40
-    TkFalse         shift and go to state 41
-    TkId            shift and go to state 42
+    TkId            shift and go to state 51
 
-    guards                         shift and go to state 50
-    then                           shift and go to state 48
-    exp                            shift and go to state 49
-    consArray                      shift and go to state 38
-    modArray                       shift and go to state 43
-    finish                         shift and go to state 44
+    range                          shift and go to state 50
 
 state 22
 
@@ -606,7 +610,7 @@ state 23
 
     (3) instBlock -> TkOBlock declare code . TkCBlock
 
-    TkCBlock        shift and go to state 51
+    TkCBlock        shift and go to state 52
 
 
 state 24
@@ -632,10 +636,10 @@ state 25
     TkId            reduce using rule 5 (declare -> TkDeclare declaration .)
     TkSkip          reduce using rule 5 (declare -> TkDeclare declaration .)
     TkOBlock        reduce using rule 5 (declare -> TkDeclare declaration .)
-    TkFor           reduce using rule 5 (declare -> TkDeclare declaration .)
     TkIf            reduce using rule 5 (declare -> TkDeclare declaration .)
     TkDo            reduce using rule 5 (declare -> TkDeclare declaration .)
-    TkSemicolon     shift and go to state 52
+    TkFor           reduce using rule 5 (declare -> TkDeclare declaration .)
+    TkSemicolon     shift and go to state 53
 
 
 state 26
@@ -648,17 +652,17 @@ state 26
     TkId            reduce using rule 6 (declare -> TkDeclare seqDeclare .)
     TkSkip          reduce using rule 6 (declare -> TkDeclare seqDeclare .)
     TkOBlock        reduce using rule 6 (declare -> TkDeclare seqDeclare .)
-    TkFor           reduce using rule 6 (declare -> TkDeclare seqDeclare .)
     TkIf            reduce using rule 6 (declare -> TkDeclare seqDeclare .)
     TkDo            reduce using rule 6 (declare -> TkDeclare seqDeclare .)
-    TkSemicolon     shift and go to state 53
+    TkFor           reduce using rule 6 (declare -> TkDeclare seqDeclare .)
+    TkSemicolon     shift and go to state 54
 
 
 state 27
 
     (7) declaration -> DeclaList . TkTwoPoints type
 
-    TkTwoPoints     shift and go to state 54
+    TkTwoPoints     shift and go to state 55
 
 
 state 28
@@ -666,7 +670,7 @@ state 28
     (8) DeclaList -> TkId . TkComma DeclaList
     (9) DeclaList -> TkId .
 
-    TkComma         shift and go to state 55
+    TkComma         shift and go to state 56
     TkTwoPoints     reduce using rule 9 (DeclaList -> TkId .)
 
 
@@ -677,9 +681,9 @@ state 29
     (35) instruction -> . instAsig
     (36) instruction -> . instSkip
     (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
     (31) instAsig -> . TkId TkAsig arrayIni
@@ -689,26 +693,26 @@ state 29
     (2) instBlock -> . TkOBlock declare TkCBlock
     (3) instBlock -> . TkOBlock declare code TkCBlock
     (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
 
     TkPrint         shift and go to state 16
     TkId            shift and go to state 17
     TkSkip          shift and go to state 18
     TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
 
-    instruction                    shift and go to state 56
+    instruction                    shift and go to state 57
     instPrint                      shift and go to state 9
     instAsig                       shift and go to state 10
     instSkip                       shift and go to state 11
     instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
 
 state 30
 
@@ -717,9 +721,9 @@ state 30
     (35) instruction -> . instAsig
     (36) instruction -> . instSkip
     (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
     (22) instPrint -> . TkPrint printAble
     (23) instPrint -> . TkPrint instConcat
     (31) instAsig -> . TkId TkAsig arrayIni
@@ -729,26 +733,26 @@ state 30
     (2) instBlock -> . TkOBlock declare TkCBlock
     (3) instBlock -> . TkOBlock declare code TkCBlock
     (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
 
     TkPrint         shift and go to state 16
     TkId            shift and go to state 17
     TkSkip          shift and go to state 18
     TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
 
-    instruction                    shift and go to state 57
+    instruction                    shift and go to state 58
     instPrint                      shift and go to state 9
     instAsig                       shift and go to state 10
     instSkip                       shift and go to state 11
     instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
 
 state 31
 
@@ -761,7 +765,7 @@ state 31
     TkGuard         reduce using rule 22 (instPrint -> TkPrint printAble .)
     TkOd            reduce using rule 22 (instPrint -> TkPrint printAble .)
     TkRof           reduce using rule 22 (instPrint -> TkPrint printAble .)
-    TkConcat        shift and go to state 58
+    TkConcat        shift and go to state 59
 
 
 state 32
@@ -775,7 +779,7 @@ state 32
     TkGuard         reduce using rule 23 (instPrint -> TkPrint instConcat .)
     TkOd            reduce using rule 23 (instPrint -> TkPrint instConcat .)
     TkRof           reduce using rule 23 (instPrint -> TkPrint instConcat .)
-    TkConcat        shift and go to state 59
+    TkConcat        shift and go to state 60
 
 
 state 33
@@ -813,17 +817,17 @@ state 34
     TkGuard         reduce using rule 28 (printAble -> exp .)
     TkOd            reduce using rule 28 (printAble -> exp .)
     TkRof           reduce using rule 28 (printAble -> exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
 state 35
@@ -862,7 +866,7 @@ state 35
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
@@ -903,7 +907,7 @@ state 36
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 72
+    exp                            shift and go to state 73
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
@@ -944,7 +948,7 @@ state 37
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 73
+    exp                            shift and go to state 74
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
@@ -1099,8 +1103,8 @@ state 42
     TkCBracket      reduce using rule 64 (exp -> TkId .)
     TkTwoPoints     reduce using rule 64 (exp -> TkId .)
     TkTo            reduce using rule 64 (exp -> TkId .)
-    TkOBracket      shift and go to state 74
-    TkOpenPar       shift and go to state 75
+    TkOBracket      shift and go to state 75
+    TkOpenPar       shift and go to state 76
 
 
 state 43
@@ -1108,8 +1112,8 @@ state 43
     (42) consArray -> modArray . TkOBracket exp TkCBracket
     (43) modArray -> modArray . TkOpenPar exp TkTwoPoints exp TkClosePar
 
-    TkOBracket      shift and go to state 76
-    TkOpenPar       shift and go to state 77
+    TkOBracket      shift and go to state 77
+    TkOpenPar       shift and go to state 78
 
 
 state 44
@@ -1166,40 +1170,33 @@ state 45
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    arrayIni                       shift and go to state 78
-    exp                            shift and go to state 79
-    modArray                       shift and go to state 80
+    arrayIni                       shift and go to state 79
+    exp                            shift and go to state 80
+    modArray                       shift and go to state 81
     consArray                      shift and go to state 38
     finish                         shift and go to state 44
 
 state 46
 
-    (65) instFor -> TkFor TkId . TkIn exp TkTo exp TkArrow code TkRof
-
-    TkIn            shift and go to state 81
-
-
-state 47
-
-    (66) instIf -> TkIf guards . TkFi
-    (68) guards -> guards . TkGuard then
+    (67) instIf -> TkIf guards . TkFi
+    (69) guards -> guards . TkGuard then
 
     TkFi            shift and go to state 82
     TkGuard         shift and go to state 83
 
 
+state 47
+
+    (70) guards -> then .
+
+    TkFi            reduce using rule 70 (guards -> then .)
+    TkGuard         reduce using rule 70 (guards -> then .)
+    TkOd            reduce using rule 70 (guards -> then .)
+
+
 state 48
 
-    (69) guards -> then .
-
-    TkFi            reduce using rule 69 (guards -> then .)
-    TkGuard         reduce using rule 69 (guards -> then .)
-    TkOd            reduce using rule 69 (guards -> then .)
-
-
-state 49
-
-    (70) then -> exp . TkArrow code
+    (71) then -> exp . TkArrow code
     (46) exp -> exp . TkPlus exp
     (47) exp -> exp . TkMinus exp
     (48) exp -> exp . TkMult exp
@@ -1213,29 +1210,43 @@ state 49
     (56) exp -> exp . TkNEqual exp
 
     TkArrow         shift and go to state 84
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 50
+state 49
 
-    (67) instDo -> TkDo guards . TkOd
-    (68) guards -> guards . TkGuard then
+    (68) instDo -> TkDo guards . TkOd
+    (69) guards -> guards . TkGuard then
 
     TkOd            shift and go to state 85
     TkGuard         shift and go to state 83
 
 
+state 50
+
+    (65) instFor -> TkFor range . TkArrow code TkRof
+
+    TkArrow         shift and go to state 86
+
+
 state 51
+
+    (66) range -> TkId . TkIn exp TkTo exp
+
+    TkIn            shift and go to state 87
+
+
+state 52
 
     (3) instBlock -> TkOBlock declare code TkCBlock .
 
@@ -1248,7 +1259,7 @@ state 51
     TkRof           reduce using rule 3 (instBlock -> TkOBlock declare code TkCBlock .)
 
 
-state 52
+state 53
 
     (10) seqDeclare -> declaration TkSemicolon . declaration
     (7) declaration -> . DeclaList TkTwoPoints type
@@ -1257,10 +1268,10 @@ state 52
 
     TkId            shift and go to state 28
 
-    declaration                    shift and go to state 86
+    declaration                    shift and go to state 88
     DeclaList                      shift and go to state 27
 
-state 53
+state 54
 
     (11) seqDeclare -> seqDeclare TkSemicolon . declaration
     (7) declaration -> . DeclaList TkTwoPoints type
@@ -1269,10 +1280,10 @@ state 53
 
     TkId            shift and go to state 28
 
-    declaration                    shift and go to state 87
+    declaration                    shift and go to state 89
     DeclaList                      shift and go to state 27
 
-state 54
+state 55
 
     (7) declaration -> DeclaList TkTwoPoints . type
     (12) type -> . TkInt
@@ -1282,13 +1293,13 @@ state 54
     (16) type -> . TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket
     (17) type -> . TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket
 
-    TkInt           shift and go to state 89
-    TkBool          shift and go to state 90
-    TkArray         shift and go to state 91
+    TkInt           shift and go to state 91
+    TkBool          shift and go to state 92
+    TkArray         shift and go to state 93
 
-    type                           shift and go to state 88
+    type                           shift and go to state 90
 
-state 55
+state 56
 
     (8) DeclaList -> TkId TkComma . DeclaList
     (8) DeclaList -> . TkId TkComma DeclaList
@@ -1296,9 +1307,9 @@ state 55
 
     TkId            shift and go to state 28
 
-    DeclaList                      shift and go to state 92
+    DeclaList                      shift and go to state 94
 
-state 56
+state 57
 
     (20) sequencing -> instruction TkSemicolon instruction .
 
@@ -1310,7 +1321,7 @@ state 56
     TkRof           reduce using rule 20 (sequencing -> instruction TkSemicolon instruction .)
 
 
-state 57
+state 58
 
     (21) sequencing -> sequencing TkSemicolon instruction .
 
@@ -1322,7 +1333,7 @@ state 57
     TkRof           reduce using rule 21 (sequencing -> sequencing TkSemicolon instruction .)
 
 
-state 58
+state 59
 
     (25) instConcat -> printAble TkConcat . printAble
     (27) printAble -> . TkString
@@ -1361,13 +1372,13 @@ state 58
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    printAble                      shift and go to state 93
+    printAble                      shift and go to state 95
     exp                            shift and go to state 34
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 59
+state 60
 
     (26) instConcat -> instConcat TkConcat . printAble
     (27) printAble -> . TkString
@@ -1406,97 +1417,15 @@ state 59
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    printAble                      shift and go to state 94
+    printAble                      shift and go to state 96
     exp                            shift and go to state 34
-    consArray                      shift and go to state 38
-    modArray                       shift and go to state 43
-    finish                         shift and go to state 44
-
-state 60
-
-    (46) exp -> exp TkPlus . exp
-    (46) exp -> . exp TkPlus exp
-    (47) exp -> . exp TkMinus exp
-    (48) exp -> . exp TkMult exp
-    (49) exp -> . exp TkAnd exp
-    (50) exp -> . exp TkOr exp
-    (51) exp -> . exp TkLess exp
-    (52) exp -> . exp TkLeq exp
-    (53) exp -> . exp TkGeq exp
-    (54) exp -> . exp TkGreater exp
-    (55) exp -> . exp TkEqual exp
-    (56) exp -> . exp TkNEqual exp
-    (57) exp -> . TkNot exp
-    (58) exp -> . TkOpenPar exp TkClosePar
-    (59) exp -> . consArray
-    (60) exp -> . TkMinus exp
-    (61) exp -> . TkNum
-    (62) exp -> . TkTrue
-    (63) exp -> . TkFalse
-    (64) exp -> . TkId
-    (41) consArray -> . TkId TkOBracket exp TkCBracket
-    (42) consArray -> . modArray TkOBracket exp TkCBracket
-    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
-    (44) modArray -> . finish
-    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
-
-    TkNot           shift and go to state 36
-    TkOpenPar       shift and go to state 37
-    TkMinus         shift and go to state 35
-    TkNum           shift and go to state 39
-    TkTrue          shift and go to state 40
-    TkFalse         shift and go to state 41
-    TkId            shift and go to state 42
-
-    exp                            shift and go to state 95
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
 state 61
 
-    (47) exp -> exp TkMinus . exp
-    (46) exp -> . exp TkPlus exp
-    (47) exp -> . exp TkMinus exp
-    (48) exp -> . exp TkMult exp
-    (49) exp -> . exp TkAnd exp
-    (50) exp -> . exp TkOr exp
-    (51) exp -> . exp TkLess exp
-    (52) exp -> . exp TkLeq exp
-    (53) exp -> . exp TkGeq exp
-    (54) exp -> . exp TkGreater exp
-    (55) exp -> . exp TkEqual exp
-    (56) exp -> . exp TkNEqual exp
-    (57) exp -> . TkNot exp
-    (58) exp -> . TkOpenPar exp TkClosePar
-    (59) exp -> . consArray
-    (60) exp -> . TkMinus exp
-    (61) exp -> . TkNum
-    (62) exp -> . TkTrue
-    (63) exp -> . TkFalse
-    (64) exp -> . TkId
-    (41) consArray -> . TkId TkOBracket exp TkCBracket
-    (42) consArray -> . modArray TkOBracket exp TkCBracket
-    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
-    (44) modArray -> . finish
-    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
-
-    TkNot           shift and go to state 36
-    TkOpenPar       shift and go to state 37
-    TkMinus         shift and go to state 35
-    TkNum           shift and go to state 39
-    TkTrue          shift and go to state 40
-    TkFalse         shift and go to state 41
-    TkId            shift and go to state 42
-
-    exp                            shift and go to state 96
-    consArray                      shift and go to state 38
-    modArray                       shift and go to state 43
-    finish                         shift and go to state 44
-
-state 62
-
-    (48) exp -> exp TkMult . exp
+    (46) exp -> exp TkPlus . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1535,9 +1464,9 @@ state 62
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 63
+state 62
 
-    (49) exp -> exp TkAnd . exp
+    (47) exp -> exp TkMinus . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1576,9 +1505,9 @@ state 63
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 64
+state 63
 
-    (50) exp -> exp TkOr . exp
+    (48) exp -> exp TkMult . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1617,9 +1546,9 @@ state 64
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 65
+state 64
 
-    (51) exp -> exp TkLess . exp
+    (49) exp -> exp TkAnd . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1658,9 +1587,9 @@ state 65
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 66
+state 65
 
-    (52) exp -> exp TkLeq . exp
+    (50) exp -> exp TkOr . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1699,9 +1628,9 @@ state 66
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 67
+state 66
 
-    (53) exp -> exp TkGeq . exp
+    (51) exp -> exp TkLess . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1740,9 +1669,9 @@ state 67
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 68
+state 67
 
-    (54) exp -> exp TkGreater . exp
+    (52) exp -> exp TkLeq . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1781,9 +1710,9 @@ state 68
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 69
+state 68
 
-    (55) exp -> exp TkEqual . exp
+    (53) exp -> exp TkGeq . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1822,9 +1751,9 @@ state 69
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 70
+state 69
 
-    (56) exp -> exp TkNEqual . exp
+    (54) exp -> exp TkGreater . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -1863,7 +1792,89 @@ state 70
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
+state 70
+
+    (55) exp -> exp TkEqual . exp
+    (46) exp -> . exp TkPlus exp
+    (47) exp -> . exp TkMinus exp
+    (48) exp -> . exp TkMult exp
+    (49) exp -> . exp TkAnd exp
+    (50) exp -> . exp TkOr exp
+    (51) exp -> . exp TkLess exp
+    (52) exp -> . exp TkLeq exp
+    (53) exp -> . exp TkGeq exp
+    (54) exp -> . exp TkGreater exp
+    (55) exp -> . exp TkEqual exp
+    (56) exp -> . exp TkNEqual exp
+    (57) exp -> . TkNot exp
+    (58) exp -> . TkOpenPar exp TkClosePar
+    (59) exp -> . consArray
+    (60) exp -> . TkMinus exp
+    (61) exp -> . TkNum
+    (62) exp -> . TkTrue
+    (63) exp -> . TkFalse
+    (64) exp -> . TkId
+    (41) consArray -> . TkId TkOBracket exp TkCBracket
+    (42) consArray -> . modArray TkOBracket exp TkCBracket
+    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
+    (44) modArray -> . finish
+    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+
+    TkNot           shift and go to state 36
+    TkOpenPar       shift and go to state 37
+    TkMinus         shift and go to state 35
+    TkNum           shift and go to state 39
+    TkTrue          shift and go to state 40
+    TkFalse         shift and go to state 41
+    TkId            shift and go to state 42
+
+    exp                            shift and go to state 106
+    consArray                      shift and go to state 38
+    modArray                       shift and go to state 43
+    finish                         shift and go to state 44
+
 state 71
+
+    (56) exp -> exp TkNEqual . exp
+    (46) exp -> . exp TkPlus exp
+    (47) exp -> . exp TkMinus exp
+    (48) exp -> . exp TkMult exp
+    (49) exp -> . exp TkAnd exp
+    (50) exp -> . exp TkOr exp
+    (51) exp -> . exp TkLess exp
+    (52) exp -> . exp TkLeq exp
+    (53) exp -> . exp TkGeq exp
+    (54) exp -> . exp TkGreater exp
+    (55) exp -> . exp TkEqual exp
+    (56) exp -> . exp TkNEqual exp
+    (57) exp -> . TkNot exp
+    (58) exp -> . TkOpenPar exp TkClosePar
+    (59) exp -> . consArray
+    (60) exp -> . TkMinus exp
+    (61) exp -> . TkNum
+    (62) exp -> . TkTrue
+    (63) exp -> . TkFalse
+    (64) exp -> . TkId
+    (41) consArray -> . TkId TkOBracket exp TkCBracket
+    (42) consArray -> . modArray TkOBracket exp TkCBracket
+    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
+    (44) modArray -> . finish
+    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+
+    TkNot           shift and go to state 36
+    TkOpenPar       shift and go to state 37
+    TkMinus         shift and go to state 35
+    TkNum           shift and go to state 39
+    TkTrue          shift and go to state 40
+    TkFalse         shift and go to state 41
+    TkId            shift and go to state 42
+
+    exp                            shift and go to state 107
+    consArray                      shift and go to state 38
+    modArray                       shift and go to state 43
+    finish                         shift and go to state 44
+
+state 72
 
     (60) exp -> TkMinus exp .
     (46) exp -> exp . TkPlus exp
@@ -1903,20 +1914,20 @@ state 71
     TkTwoPoints     reduce using rule 60 (exp -> TkMinus exp .)
     TkTo            reduce using rule 60 (exp -> TkMinus exp .)
 
-  ! TkPlus          [ shift and go to state 60 ]
-  ! TkMinus         [ shift and go to state 61 ]
-  ! TkMult          [ shift and go to state 62 ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkPlus          [ shift and go to state 61 ]
+  ! TkMinus         [ shift and go to state 62 ]
+  ! TkMult          [ shift and go to state 63 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 72
+state 73
 
     (57) exp -> TkNot exp .
     (46) exp -> exp . TkPlus exp
@@ -1946,15 +1957,15 @@ state 72
     TkCBracket      reduce using rule 57 (exp -> TkNot exp .)
     TkTwoPoints     reduce using rule 57 (exp -> TkNot exp .)
     TkTo            reduce using rule 57 (exp -> TkNot exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
   ! TkPlus          [ reduce using rule 57 (exp -> TkNot exp .) ]
   ! TkMinus         [ reduce using rule 57 (exp -> TkNot exp .) ]
@@ -1965,11 +1976,11 @@ state 72
   ! TkGreater       [ reduce using rule 57 (exp -> TkNot exp .) ]
   ! TkEqual         [ reduce using rule 57 (exp -> TkNot exp .) ]
   ! TkNEqual        [ reduce using rule 57 (exp -> TkNot exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
 
 
-state 73
+state 74
 
     (58) exp -> TkOpenPar exp . TkClosePar
     (46) exp -> exp . TkPlus exp
@@ -1984,21 +1995,21 @@ state 73
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkClosePar      shift and go to state 106
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkClosePar      shift and go to state 108
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 74
+state 75
 
     (41) consArray -> TkId TkOBracket . exp TkCBracket
     (46) exp -> . exp TkPlus exp
@@ -2034,12 +2045,12 @@ state 74
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 107
+    exp                            shift and go to state 109
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 75
+state 76
 
     (45) finish -> TkId TkOpenPar . exp TkTwoPoints exp TkClosePar
     (46) exp -> . exp TkPlus exp
@@ -2075,12 +2086,12 @@ state 75
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 108
+    exp                            shift and go to state 110
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 76
+state 77
 
     (42) consArray -> modArray TkOBracket . exp TkCBracket
     (46) exp -> . exp TkPlus exp
@@ -2117,11 +2128,11 @@ state 76
     TkId            shift and go to state 42
 
     modArray                       shift and go to state 43
-    exp                            shift and go to state 109
+    exp                            shift and go to state 111
     consArray                      shift and go to state 38
     finish                         shift and go to state 44
 
-state 77
+state 78
 
     (43) modArray -> modArray TkOpenPar . exp TkTwoPoints exp TkClosePar
     (46) exp -> . exp TkPlus exp
@@ -2158,11 +2169,11 @@ state 77
     TkId            shift and go to state 42
 
     modArray                       shift and go to state 43
-    exp                            shift and go to state 110
+    exp                            shift and go to state 112
     consArray                      shift and go to state 38
     finish                         shift and go to state 44
 
-state 78
+state 79
 
     (31) instAsig -> TkId TkAsig arrayIni .
     (30) arrayIni -> arrayIni . TkComma exp
@@ -2173,10 +2184,10 @@ state 78
     TkGuard         reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
     TkOd            reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
     TkRof           reduce using rule 31 (instAsig -> TkId TkAsig arrayIni .)
-    TkComma         shift and go to state 111
+    TkComma         shift and go to state 113
 
 
-state 79
+state 80
 
     (32) instAsig -> TkId TkAsig exp .
     (29) arrayIni -> exp . TkComma exp
@@ -2198,21 +2209,21 @@ state 79
     TkGuard         reduce using rule 32 (instAsig -> TkId TkAsig exp .)
     TkOd            reduce using rule 32 (instAsig -> TkId TkAsig exp .)
     TkRof           reduce using rule 32 (instAsig -> TkId TkAsig exp .)
-    TkComma         shift and go to state 112
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkComma         shift and go to state 114
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 80
+state 81
 
     (33) instAsig -> TkId TkAsig modArray .
     (43) modArray -> modArray . TkOpenPar exp TkTwoPoints exp TkClosePar
@@ -2224,67 +2235,26 @@ state 80
     TkGuard         reduce using rule 33 (instAsig -> TkId TkAsig modArray .)
     TkOd            reduce using rule 33 (instAsig -> TkId TkAsig modArray .)
     TkRof           reduce using rule 33 (instAsig -> TkId TkAsig modArray .)
-    TkOpenPar       shift and go to state 77
-    TkOBracket      shift and go to state 76
+    TkOpenPar       shift and go to state 78
+    TkOBracket      shift and go to state 77
 
-
-state 81
-
-    (65) instFor -> TkFor TkId TkIn . exp TkTo exp TkArrow code TkRof
-    (46) exp -> . exp TkPlus exp
-    (47) exp -> . exp TkMinus exp
-    (48) exp -> . exp TkMult exp
-    (49) exp -> . exp TkAnd exp
-    (50) exp -> . exp TkOr exp
-    (51) exp -> . exp TkLess exp
-    (52) exp -> . exp TkLeq exp
-    (53) exp -> . exp TkGeq exp
-    (54) exp -> . exp TkGreater exp
-    (55) exp -> . exp TkEqual exp
-    (56) exp -> . exp TkNEqual exp
-    (57) exp -> . TkNot exp
-    (58) exp -> . TkOpenPar exp TkClosePar
-    (59) exp -> . consArray
-    (60) exp -> . TkMinus exp
-    (61) exp -> . TkNum
-    (62) exp -> . TkTrue
-    (63) exp -> . TkFalse
-    (64) exp -> . TkId
-    (41) consArray -> . TkId TkOBracket exp TkCBracket
-    (42) consArray -> . modArray TkOBracket exp TkCBracket
-    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
-    (44) modArray -> . finish
-    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
-
-    TkNot           shift and go to state 36
-    TkOpenPar       shift and go to state 37
-    TkMinus         shift and go to state 35
-    TkNum           shift and go to state 39
-    TkTrue          shift and go to state 40
-    TkFalse         shift and go to state 41
-    TkId            shift and go to state 42
-
-    exp                            shift and go to state 113
-    consArray                      shift and go to state 38
-    modArray                       shift and go to state 43
-    finish                         shift and go to state 44
 
 state 82
 
-    (66) instIf -> TkIf guards TkFi .
+    (67) instIf -> TkIf guards TkFi .
 
-    TkSemicolon     reduce using rule 66 (instIf -> TkIf guards TkFi .)
-    TkCBlock        reduce using rule 66 (instIf -> TkIf guards TkFi .)
-    TkFi            reduce using rule 66 (instIf -> TkIf guards TkFi .)
-    TkGuard         reduce using rule 66 (instIf -> TkIf guards TkFi .)
-    TkOd            reduce using rule 66 (instIf -> TkIf guards TkFi .)
-    TkRof           reduce using rule 66 (instIf -> TkIf guards TkFi .)
+    TkSemicolon     reduce using rule 67 (instIf -> TkIf guards TkFi .)
+    TkCBlock        reduce using rule 67 (instIf -> TkIf guards TkFi .)
+    TkFi            reduce using rule 67 (instIf -> TkIf guards TkFi .)
+    TkGuard         reduce using rule 67 (instIf -> TkIf guards TkFi .)
+    TkOd            reduce using rule 67 (instIf -> TkIf guards TkFi .)
+    TkRof           reduce using rule 67 (instIf -> TkIf guards TkFi .)
 
 
 state 83
 
-    (68) guards -> guards TkGuard . then
-    (70) then -> . exp TkArrow code
+    (69) guards -> guards TkGuard . then
+    (71) then -> . exp TkArrow code
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -2318,24 +2288,24 @@ state 83
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    then                           shift and go to state 114
-    exp                            shift and go to state 49
+    then                           shift and go to state 115
+    exp                            shift and go to state 48
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
 state 84
 
-    (70) then -> exp TkArrow . code
+    (71) then -> exp TkArrow . code
     (18) code -> . instruction
     (19) code -> . sequencing
     (34) instruction -> . instPrint
     (35) instruction -> . instAsig
     (36) instruction -> . instSkip
     (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
     (20) sequencing -> . instruction TkSemicolon instruction
     (21) sequencing -> . sequencing TkSemicolon instruction
     (22) instPrint -> . TkPrint printAble
@@ -2347,42 +2317,129 @@ state 84
     (2) instBlock -> . TkOBlock declare TkCBlock
     (3) instBlock -> . TkOBlock declare code TkCBlock
     (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
 
     TkPrint         shift and go to state 16
     TkId            shift and go to state 17
     TkSkip          shift and go to state 18
     TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
 
-    code                           shift and go to state 115
+    code                           shift and go to state 116
     instruction                    shift and go to state 7
     sequencing                     shift and go to state 8
     instPrint                      shift and go to state 9
     instAsig                       shift and go to state 10
     instSkip                       shift and go to state 11
     instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
 
 state 85
 
-    (67) instDo -> TkDo guards TkOd .
+    (68) instDo -> TkDo guards TkOd .
 
-    TkSemicolon     reduce using rule 67 (instDo -> TkDo guards TkOd .)
-    TkCBlock        reduce using rule 67 (instDo -> TkDo guards TkOd .)
-    TkFi            reduce using rule 67 (instDo -> TkDo guards TkOd .)
-    TkGuard         reduce using rule 67 (instDo -> TkDo guards TkOd .)
-    TkOd            reduce using rule 67 (instDo -> TkDo guards TkOd .)
-    TkRof           reduce using rule 67 (instDo -> TkDo guards TkOd .)
+    TkSemicolon     reduce using rule 68 (instDo -> TkDo guards TkOd .)
+    TkCBlock        reduce using rule 68 (instDo -> TkDo guards TkOd .)
+    TkFi            reduce using rule 68 (instDo -> TkDo guards TkOd .)
+    TkGuard         reduce using rule 68 (instDo -> TkDo guards TkOd .)
+    TkOd            reduce using rule 68 (instDo -> TkDo guards TkOd .)
+    TkRof           reduce using rule 68 (instDo -> TkDo guards TkOd .)
 
 
 state 86
+
+    (65) instFor -> TkFor range TkArrow . code TkRof
+    (18) code -> . instruction
+    (19) code -> . sequencing
+    (34) instruction -> . instPrint
+    (35) instruction -> . instAsig
+    (36) instruction -> . instSkip
+    (37) instruction -> . instBlock
+    (38) instruction -> . instIf
+    (39) instruction -> . instDo
+    (40) instruction -> . instFor
+    (20) sequencing -> . instruction TkSemicolon instruction
+    (21) sequencing -> . sequencing TkSemicolon instruction
+    (22) instPrint -> . TkPrint printAble
+    (23) instPrint -> . TkPrint instConcat
+    (31) instAsig -> . TkId TkAsig arrayIni
+    (32) instAsig -> . TkId TkAsig exp
+    (33) instAsig -> . TkId TkAsig modArray
+    (24) instSkip -> . TkSkip
+    (2) instBlock -> . TkOBlock declare TkCBlock
+    (3) instBlock -> . TkOBlock declare code TkCBlock
+    (4) instBlock -> . TkOBlock code TkCBlock
+    (67) instIf -> . TkIf guards TkFi
+    (68) instDo -> . TkDo guards TkOd
+    (65) instFor -> . TkFor range TkArrow code TkRof
+
+    TkPrint         shift and go to state 16
+    TkId            shift and go to state 17
+    TkSkip          shift and go to state 18
+    TkOBlock        shift and go to state 3
+    TkIf            shift and go to state 19
+    TkDo            shift and go to state 20
+    TkFor           shift and go to state 21
+
+    code                           shift and go to state 117
+    instruction                    shift and go to state 7
+    sequencing                     shift and go to state 8
+    instPrint                      shift and go to state 9
+    instAsig                       shift and go to state 10
+    instSkip                       shift and go to state 11
+    instBlock                      shift and go to state 12
+    instIf                         shift and go to state 13
+    instDo                         shift and go to state 14
+    instFor                        shift and go to state 15
+
+state 87
+
+    (66) range -> TkId TkIn . exp TkTo exp
+    (46) exp -> . exp TkPlus exp
+    (47) exp -> . exp TkMinus exp
+    (48) exp -> . exp TkMult exp
+    (49) exp -> . exp TkAnd exp
+    (50) exp -> . exp TkOr exp
+    (51) exp -> . exp TkLess exp
+    (52) exp -> . exp TkLeq exp
+    (53) exp -> . exp TkGeq exp
+    (54) exp -> . exp TkGreater exp
+    (55) exp -> . exp TkEqual exp
+    (56) exp -> . exp TkNEqual exp
+    (57) exp -> . TkNot exp
+    (58) exp -> . TkOpenPar exp TkClosePar
+    (59) exp -> . consArray
+    (60) exp -> . TkMinus exp
+    (61) exp -> . TkNum
+    (62) exp -> . TkTrue
+    (63) exp -> . TkFalse
+    (64) exp -> . TkId
+    (41) consArray -> . TkId TkOBracket exp TkCBracket
+    (42) consArray -> . modArray TkOBracket exp TkCBracket
+    (43) modArray -> . modArray TkOpenPar exp TkTwoPoints exp TkClosePar
+    (44) modArray -> . finish
+    (45) finish -> . TkId TkOpenPar exp TkTwoPoints exp TkClosePar
+
+    TkNot           shift and go to state 36
+    TkOpenPar       shift and go to state 37
+    TkMinus         shift and go to state 35
+    TkNum           shift and go to state 39
+    TkTrue          shift and go to state 40
+    TkFalse         shift and go to state 41
+    TkId            shift and go to state 42
+
+    exp                            shift and go to state 118
+    consArray                      shift and go to state 38
+    modArray                       shift and go to state 43
+    finish                         shift and go to state 44
+
+state 88
 
     (10) seqDeclare -> declaration TkSemicolon declaration .
 
@@ -2392,12 +2449,12 @@ state 86
     TkId            reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
     TkSkip          reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
     TkOBlock        reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
-    TkFor           reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
     TkIf            reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
     TkDo            reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
+    TkFor           reduce using rule 10 (seqDeclare -> declaration TkSemicolon declaration .)
 
 
-state 87
+state 89
 
     (11) seqDeclare -> seqDeclare TkSemicolon declaration .
 
@@ -2407,12 +2464,12 @@ state 87
     TkId            reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
     TkSkip          reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
     TkOBlock        reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
-    TkFor           reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
     TkIf            reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
     TkDo            reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
+    TkFor           reduce using rule 11 (seqDeclare -> seqDeclare TkSemicolon declaration .)
 
 
-state 88
+state 90
 
     (7) declaration -> DeclaList TkTwoPoints type .
 
@@ -2422,12 +2479,12 @@ state 88
     TkId            reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
     TkSkip          reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
     TkOBlock        reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
-    TkFor           reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
     TkIf            reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
     TkDo            reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
+    TkFor           reduce using rule 7 (declaration -> DeclaList TkTwoPoints type .)
 
 
-state 89
+state 91
 
     (12) type -> TkInt .
 
@@ -2437,12 +2494,12 @@ state 89
     TkId            reduce using rule 12 (type -> TkInt .)
     TkSkip          reduce using rule 12 (type -> TkInt .)
     TkOBlock        reduce using rule 12 (type -> TkInt .)
-    TkFor           reduce using rule 12 (type -> TkInt .)
     TkIf            reduce using rule 12 (type -> TkInt .)
     TkDo            reduce using rule 12 (type -> TkInt .)
+    TkFor           reduce using rule 12 (type -> TkInt .)
 
 
-state 90
+state 92
 
     (13) type -> TkBool .
 
@@ -2452,29 +2509,29 @@ state 90
     TkId            reduce using rule 13 (type -> TkBool .)
     TkSkip          reduce using rule 13 (type -> TkBool .)
     TkOBlock        reduce using rule 13 (type -> TkBool .)
-    TkFor           reduce using rule 13 (type -> TkBool .)
     TkIf            reduce using rule 13 (type -> TkBool .)
     TkDo            reduce using rule 13 (type -> TkBool .)
+    TkFor           reduce using rule 13 (type -> TkBool .)
 
 
-state 91
+state 93
 
     (14) type -> TkArray . TkOBracket TkNum TkSoForth TkNum TkCBracket
     (15) type -> TkArray . TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket
     (16) type -> TkArray . TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket
     (17) type -> TkArray . TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket
 
-    TkOBracket      shift and go to state 116
+    TkOBracket      shift and go to state 119
 
 
-state 92
+state 94
 
     (8) DeclaList -> TkId TkComma DeclaList .
 
     TkTwoPoints     reduce using rule 8 (DeclaList -> TkId TkComma DeclaList .)
 
 
-state 93
+state 95
 
     (25) instConcat -> printAble TkConcat printAble .
 
@@ -2487,7 +2544,7 @@ state 93
     TkRof           reduce using rule 25 (instConcat -> printAble TkConcat printAble .)
 
 
-state 94
+state 96
 
     (26) instConcat -> instConcat TkConcat printAble .
 
@@ -2500,7 +2557,7 @@ state 94
     TkRof           reduce using rule 26 (instConcat -> instConcat TkConcat printAble .)
 
 
-state 95
+state 97
 
     (46) exp -> exp TkPlus exp .
     (46) exp -> exp . TkPlus exp
@@ -2538,22 +2595,22 @@ state 95
     TkCBracket      reduce using rule 46 (exp -> exp TkPlus exp .)
     TkTwoPoints     reduce using rule 46 (exp -> exp TkPlus exp .)
     TkTo            reduce using rule 46 (exp -> exp TkPlus exp .)
-    TkMult          shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkMult          [ reduce using rule 46 (exp -> exp TkPlus exp .) ]
-  ! TkPlus          [ shift and go to state 60 ]
-  ! TkMinus         [ shift and go to state 61 ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkPlus          [ shift and go to state 61 ]
+  ! TkMinus         [ shift and go to state 62 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 96
+state 98
 
     (47) exp -> exp TkMinus exp .
     (46) exp -> exp . TkPlus exp
@@ -2591,22 +2648,22 @@ state 96
     TkCBracket      reduce using rule 47 (exp -> exp TkMinus exp .)
     TkTwoPoints     reduce using rule 47 (exp -> exp TkMinus exp .)
     TkTo            reduce using rule 47 (exp -> exp TkMinus exp .)
-    TkMult          shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkMult          [ reduce using rule 47 (exp -> exp TkMinus exp .) ]
-  ! TkPlus          [ shift and go to state 60 ]
-  ! TkMinus         [ shift and go to state 61 ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkPlus          [ shift and go to state 61 ]
+  ! TkMinus         [ shift and go to state 62 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 97
+state 99
 
     (48) exp -> exp TkMult exp .
     (46) exp -> exp . TkPlus exp
@@ -2646,20 +2703,20 @@ state 97
     TkTwoPoints     reduce using rule 48 (exp -> exp TkMult exp .)
     TkTo            reduce using rule 48 (exp -> exp TkMult exp .)
 
-  ! TkPlus          [ shift and go to state 60 ]
-  ! TkMinus         [ shift and go to state 61 ]
-  ! TkMult          [ shift and go to state 62 ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkPlus          [ shift and go to state 61 ]
+  ! TkMinus         [ shift and go to state 62 ]
+  ! TkMult          [ shift and go to state 63 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 98
+state 100
 
     (49) exp -> exp TkAnd exp .
     (46) exp -> exp . TkPlus exp
@@ -2689,15 +2746,15 @@ state 98
     TkCBracket      reduce using rule 49 (exp -> exp TkAnd exp .)
     TkTwoPoints     reduce using rule 49 (exp -> exp TkAnd exp .)
     TkTo            reduce using rule 49 (exp -> exp TkAnd exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
   ! TkPlus          [ reduce using rule 49 (exp -> exp TkAnd exp .) ]
   ! TkMinus         [ reduce using rule 49 (exp -> exp TkAnd exp .) ]
@@ -2708,11 +2765,11 @@ state 98
   ! TkGreater       [ reduce using rule 49 (exp -> exp TkAnd exp .) ]
   ! TkEqual         [ reduce using rule 49 (exp -> exp TkAnd exp .) ]
   ! TkNEqual        [ reduce using rule 49 (exp -> exp TkAnd exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
 
 
-state 99
+state 101
 
     (50) exp -> exp TkOr exp .
     (46) exp -> exp . TkPlus exp
@@ -2741,16 +2798,16 @@ state 99
     TkCBracket      reduce using rule 50 (exp -> exp TkOr exp .)
     TkTwoPoints     reduce using rule 50 (exp -> exp TkOr exp .)
     TkTo            reduce using rule 50 (exp -> exp TkOr exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
   ! TkPlus          [ reduce using rule 50 (exp -> exp TkOr exp .) ]
   ! TkMinus         [ reduce using rule 50 (exp -> exp TkOr exp .) ]
@@ -2762,10 +2819,10 @@ state 99
   ! TkGreater       [ reduce using rule 50 (exp -> exp TkOr exp .) ]
   ! TkEqual         [ reduce using rule 50 (exp -> exp TkOr exp .) ]
   ! TkNEqual        [ reduce using rule 50 (exp -> exp TkOr exp .) ]
-  ! TkOr            [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
 
 
-state 100
+state 102
 
     (51) exp -> exp TkLess exp .
     (46) exp -> exp . TkPlus exp
@@ -2801,24 +2858,24 @@ state 100
     TkCBracket      reduce using rule 51 (exp -> exp TkLess exp .)
     TkTwoPoints     reduce using rule 51 (exp -> exp TkLess exp .)
     TkTo            reduce using rule 51 (exp -> exp TkLess exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkPlus          [ reduce using rule 51 (exp -> exp TkLess exp .) ]
   ! TkMinus         [ reduce using rule 51 (exp -> exp TkLess exp .) ]
   ! TkMult          [ reduce using rule 51 (exp -> exp TkLess exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 101
+state 103
 
     (52) exp -> exp TkLeq exp .
     (46) exp -> exp . TkPlus exp
@@ -2854,24 +2911,24 @@ state 101
     TkCBracket      reduce using rule 52 (exp -> exp TkLeq exp .)
     TkTwoPoints     reduce using rule 52 (exp -> exp TkLeq exp .)
     TkTo            reduce using rule 52 (exp -> exp TkLeq exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkPlus          [ reduce using rule 52 (exp -> exp TkLeq exp .) ]
   ! TkMinus         [ reduce using rule 52 (exp -> exp TkLeq exp .) ]
   ! TkMult          [ reduce using rule 52 (exp -> exp TkLeq exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 102
+state 104
 
     (53) exp -> exp TkGeq exp .
     (46) exp -> exp . TkPlus exp
@@ -2907,24 +2964,24 @@ state 102
     TkCBracket      reduce using rule 53 (exp -> exp TkGeq exp .)
     TkTwoPoints     reduce using rule 53 (exp -> exp TkGeq exp .)
     TkTo            reduce using rule 53 (exp -> exp TkGeq exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkPlus          [ reduce using rule 53 (exp -> exp TkGeq exp .) ]
   ! TkMinus         [ reduce using rule 53 (exp -> exp TkGeq exp .) ]
   ! TkMult          [ reduce using rule 53 (exp -> exp TkGeq exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 103
+state 105
 
     (54) exp -> exp TkGreater exp .
     (46) exp -> exp . TkPlus exp
@@ -2960,24 +3017,24 @@ state 103
     TkCBracket      reduce using rule 54 (exp -> exp TkGreater exp .)
     TkTwoPoints     reduce using rule 54 (exp -> exp TkGreater exp .)
     TkTo            reduce using rule 54 (exp -> exp TkGreater exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
 
   ! TkPlus          [ reduce using rule 54 (exp -> exp TkGreater exp .) ]
   ! TkMinus         [ reduce using rule 54 (exp -> exp TkGreater exp .) ]
   ! TkMult          [ reduce using rule 54 (exp -> exp TkGreater exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkLess          [ shift and go to state 65 ]
-  ! TkLeq           [ shift and go to state 66 ]
-  ! TkGeq           [ shift and go to state 67 ]
-  ! TkGreater       [ shift and go to state 68 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkLess          [ shift and go to state 66 ]
+  ! TkLeq           [ shift and go to state 67 ]
+  ! TkGeq           [ shift and go to state 68 ]
+  ! TkGreater       [ shift and go to state 69 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 104
+state 106
 
     (55) exp -> exp TkEqual exp .
     (46) exp -> exp . TkPlus exp
@@ -3009,13 +3066,13 @@ state 104
     TkCBracket      reduce using rule 55 (exp -> exp TkEqual exp .)
     TkTwoPoints     reduce using rule 55 (exp -> exp TkEqual exp .)
     TkTo            reduce using rule 55 (exp -> exp TkEqual exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
 
   ! TkPlus          [ reduce using rule 55 (exp -> exp TkEqual exp .) ]
   ! TkMinus         [ reduce using rule 55 (exp -> exp TkEqual exp .) ]
@@ -3024,13 +3081,13 @@ state 104
   ! TkLeq           [ reduce using rule 55 (exp -> exp TkEqual exp .) ]
   ! TkGeq           [ reduce using rule 55 (exp -> exp TkEqual exp .) ]
   ! TkGreater       [ reduce using rule 55 (exp -> exp TkEqual exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 105
+state 107
 
     (56) exp -> exp TkNEqual exp .
     (46) exp -> exp . TkPlus exp
@@ -3062,13 +3119,13 @@ state 105
     TkCBracket      reduce using rule 56 (exp -> exp TkNEqual exp .)
     TkTwoPoints     reduce using rule 56 (exp -> exp TkNEqual exp .)
     TkTo            reduce using rule 56 (exp -> exp TkNEqual exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
 
   ! TkPlus          [ reduce using rule 56 (exp -> exp TkNEqual exp .) ]
   ! TkMinus         [ reduce using rule 56 (exp -> exp TkNEqual exp .) ]
@@ -3077,13 +3134,13 @@ state 105
   ! TkLeq           [ reduce using rule 56 (exp -> exp TkNEqual exp .) ]
   ! TkGeq           [ reduce using rule 56 (exp -> exp TkNEqual exp .) ]
   ! TkGreater       [ reduce using rule 56 (exp -> exp TkNEqual exp .) ]
-  ! TkAnd           [ shift and go to state 63 ]
-  ! TkOr            [ shift and go to state 64 ]
-  ! TkEqual         [ shift and go to state 69 ]
-  ! TkNEqual        [ shift and go to state 70 ]
+  ! TkAnd           [ shift and go to state 64 ]
+  ! TkOr            [ shift and go to state 65 ]
+  ! TkEqual         [ shift and go to state 70 ]
+  ! TkNEqual        [ shift and go to state 71 ]
 
 
-state 106
+state 108
 
     (58) exp -> TkOpenPar exp TkClosePar .
 
@@ -3113,7 +3170,7 @@ state 106
     TkTo            reduce using rule 58 (exp -> TkOpenPar exp TkClosePar .)
 
 
-state 107
+state 109
 
     (41) consArray -> TkId TkOBracket exp . TkCBracket
     (46) exp -> exp . TkPlus exp
@@ -3128,21 +3185,21 @@ state 107
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkCBracket      shift and go to state 117
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkCBracket      shift and go to state 120
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 108
+state 110
 
     (45) finish -> TkId TkOpenPar exp . TkTwoPoints exp TkClosePar
     (46) exp -> exp . TkPlus exp
@@ -3157,21 +3214,21 @@ state 108
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkTwoPoints     shift and go to state 118
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkTwoPoints     shift and go to state 121
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 109
+state 111
 
     (42) consArray -> modArray TkOBracket exp . TkCBracket
     (46) exp -> exp . TkPlus exp
@@ -3186,21 +3243,21 @@ state 109
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkCBracket      shift and go to state 119
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkCBracket      shift and go to state 122
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 110
+state 112
 
     (43) modArray -> modArray TkOpenPar exp . TkTwoPoints exp TkClosePar
     (46) exp -> exp . TkPlus exp
@@ -3215,21 +3272,21 @@ state 110
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkTwoPoints     shift and go to state 120
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkTwoPoints     shift and go to state 123
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 111
+state 113
 
     (30) arrayIni -> arrayIni TkComma . exp
     (46) exp -> . exp TkPlus exp
@@ -3265,12 +3322,12 @@ state 111
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 121
+    exp                            shift and go to state 124
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 112
+state 114
 
     (29) arrayIni -> exp TkComma . exp
     (46) exp -> . exp TkPlus exp
@@ -3306,14 +3363,39 @@ state 112
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 122
+    exp                            shift and go to state 125
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 113
+state 115
 
-    (65) instFor -> TkFor TkId TkIn exp . TkTo exp TkArrow code TkRof
+    (69) guards -> guards TkGuard then .
+
+    TkFi            reduce using rule 69 (guards -> guards TkGuard then .)
+    TkGuard         reduce using rule 69 (guards -> guards TkGuard then .)
+    TkOd            reduce using rule 69 (guards -> guards TkGuard then .)
+
+
+state 116
+
+    (71) then -> exp TkArrow code .
+
+    TkFi            reduce using rule 71 (then -> exp TkArrow code .)
+    TkGuard         reduce using rule 71 (then -> exp TkArrow code .)
+    TkOd            reduce using rule 71 (then -> exp TkArrow code .)
+
+
+state 117
+
+    (65) instFor -> TkFor range TkArrow code . TkRof
+
+    TkRof           shift and go to state 126
+
+
+state 118
+
+    (66) range -> TkId TkIn exp . TkTo exp
     (46) exp -> exp . TkPlus exp
     (47) exp -> exp . TkMinus exp
     (48) exp -> exp . TkMult exp
@@ -3326,50 +3408,32 @@ state 113
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkTo            shift and go to state 123
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkTo            shift and go to state 127
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 114
-
-    (68) guards -> guards TkGuard then .
-
-    TkFi            reduce using rule 68 (guards -> guards TkGuard then .)
-    TkGuard         reduce using rule 68 (guards -> guards TkGuard then .)
-    TkOd            reduce using rule 68 (guards -> guards TkGuard then .)
-
-
-state 115
-
-    (70) then -> exp TkArrow code .
-
-    TkFi            reduce using rule 70 (then -> exp TkArrow code .)
-    TkGuard         reduce using rule 70 (then -> exp TkArrow code .)
-    TkOd            reduce using rule 70 (then -> exp TkArrow code .)
-
-
-state 116
+state 119
 
     (14) type -> TkArray TkOBracket . TkNum TkSoForth TkNum TkCBracket
     (15) type -> TkArray TkOBracket . TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket
     (16) type -> TkArray TkOBracket . TkNum TkSoForth TkMinus TkNum TkCBracket
     (17) type -> TkArray TkOBracket . TkMinus TkNum TkSoForth TkNum TkCBracket
 
-    TkNum           shift and go to state 124
-    TkMinus         shift and go to state 125
+    TkNum           shift and go to state 128
+    TkMinus         shift and go to state 129
 
 
-state 117
+state 120
 
     (41) consArray -> TkId TkOBracket exp TkCBracket .
 
@@ -3399,7 +3463,7 @@ state 117
     TkTo            reduce using rule 41 (consArray -> TkId TkOBracket exp TkCBracket .)
 
 
-state 118
+state 121
 
     (45) finish -> TkId TkOpenPar exp TkTwoPoints . exp TkClosePar
     (46) exp -> . exp TkPlus exp
@@ -3435,12 +3499,12 @@ state 118
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 126
+    exp                            shift and go to state 130
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 119
+state 122
 
     (42) consArray -> modArray TkOBracket exp TkCBracket .
 
@@ -3470,7 +3534,7 @@ state 119
     TkTo            reduce using rule 42 (consArray -> modArray TkOBracket exp TkCBracket .)
 
 
-state 120
+state 123
 
     (43) modArray -> modArray TkOpenPar exp TkTwoPoints . exp TkClosePar
     (46) exp -> . exp TkPlus exp
@@ -3507,11 +3571,11 @@ state 120
     TkId            shift and go to state 42
 
     modArray                       shift and go to state 43
-    exp                            shift and go to state 127
+    exp                            shift and go to state 131
     consArray                      shift and go to state 38
     finish                         shift and go to state 44
 
-state 121
+state 124
 
     (30) arrayIni -> arrayIni TkComma exp .
     (46) exp -> exp . TkPlus exp
@@ -3533,20 +3597,20 @@ state 121
     TkGuard         reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
     TkOd            reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
     TkRof           reduce using rule 30 (arrayIni -> arrayIni TkComma exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 122
+state 125
 
     (29) arrayIni -> exp TkComma exp .
     (46) exp -> exp . TkPlus exp
@@ -3568,22 +3632,34 @@ state 122
     TkGuard         reduce using rule 29 (arrayIni -> exp TkComma exp .)
     TkOd            reduce using rule 29 (arrayIni -> exp TkComma exp .)
     TkRof           reduce using rule 29 (arrayIni -> exp TkComma exp .)
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 123
+state 126
 
-    (65) instFor -> TkFor TkId TkIn exp TkTo . exp TkArrow code TkRof
+    (65) instFor -> TkFor range TkArrow code TkRof .
+
+    TkSemicolon     reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+    TkCBlock        reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+    TkFi            reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+    TkGuard         reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+    TkOd            reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+    TkRof           reduce using rule 65 (instFor -> TkFor range TkArrow code TkRof .)
+
+
+state 127
+
+    (66) range -> TkId TkIn exp TkTo . exp
     (46) exp -> . exp TkPlus exp
     (47) exp -> . exp TkMinus exp
     (48) exp -> . exp TkMult exp
@@ -3617,28 +3693,28 @@ state 123
     TkFalse         shift and go to state 41
     TkId            shift and go to state 42
 
-    exp                            shift and go to state 128
+    exp                            shift and go to state 132
     consArray                      shift and go to state 38
     modArray                       shift and go to state 43
     finish                         shift and go to state 44
 
-state 124
+state 128
 
     (14) type -> TkArray TkOBracket TkNum . TkSoForth TkNum TkCBracket
     (16) type -> TkArray TkOBracket TkNum . TkSoForth TkMinus TkNum TkCBracket
 
-    TkSoForth       shift and go to state 129
+    TkSoForth       shift and go to state 133
 
 
-state 125
+state 129
 
     (15) type -> TkArray TkOBracket TkMinus . TkNum TkSoForth TkMinus TkNum TkCBracket
     (17) type -> TkArray TkOBracket TkMinus . TkNum TkSoForth TkNum TkCBracket
 
-    TkNum           shift and go to state 130
+    TkNum           shift and go to state 134
 
 
-state 126
+state 130
 
     (45) finish -> TkId TkOpenPar exp TkTwoPoints exp . TkClosePar
     (46) exp -> exp . TkPlus exp
@@ -3653,21 +3729,21 @@ state 126
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkClosePar      shift and go to state 131
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkClosePar      shift and go to state 135
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 127
+state 131
 
     (43) modArray -> modArray TkOpenPar exp TkTwoPoints exp . TkClosePar
     (46) exp -> exp . TkPlus exp
@@ -3682,23 +3758,23 @@ state 127
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkClosePar      shift and go to state 132
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkClosePar      shift and go to state 136
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 128
+state 132
 
-    (65) instFor -> TkFor TkId TkIn exp TkTo exp . TkArrow code TkRof
+    (66) range -> TkId TkIn exp TkTo exp .
     (46) exp -> exp . TkPlus exp
     (47) exp -> exp . TkMinus exp
     (48) exp -> exp . TkMult exp
@@ -3711,38 +3787,38 @@ state 128
     (55) exp -> exp . TkEqual exp
     (56) exp -> exp . TkNEqual exp
 
-    TkArrow         shift and go to state 133
-    TkPlus          shift and go to state 60
-    TkMinus         shift and go to state 61
-    TkMult          shift and go to state 62
-    TkAnd           shift and go to state 63
-    TkOr            shift and go to state 64
-    TkLess          shift and go to state 65
-    TkLeq           shift and go to state 66
-    TkGeq           shift and go to state 67
-    TkGreater       shift and go to state 68
-    TkEqual         shift and go to state 69
-    TkNEqual        shift and go to state 70
+    TkArrow         reduce using rule 66 (range -> TkId TkIn exp TkTo exp .)
+    TkPlus          shift and go to state 61
+    TkMinus         shift and go to state 62
+    TkMult          shift and go to state 63
+    TkAnd           shift and go to state 64
+    TkOr            shift and go to state 65
+    TkLess          shift and go to state 66
+    TkLeq           shift and go to state 67
+    TkGeq           shift and go to state 68
+    TkGreater       shift and go to state 69
+    TkEqual         shift and go to state 70
+    TkNEqual        shift and go to state 71
 
 
-state 129
+state 133
 
     (14) type -> TkArray TkOBracket TkNum TkSoForth . TkNum TkCBracket
     (16) type -> TkArray TkOBracket TkNum TkSoForth . TkMinus TkNum TkCBracket
 
-    TkNum           shift and go to state 134
-    TkMinus         shift and go to state 135
+    TkNum           shift and go to state 137
+    TkMinus         shift and go to state 138
 
 
-state 130
+state 134
 
     (15) type -> TkArray TkOBracket TkMinus TkNum . TkSoForth TkMinus TkNum TkCBracket
     (17) type -> TkArray TkOBracket TkMinus TkNum . TkSoForth TkNum TkCBracket
 
-    TkSoForth       shift and go to state 136
+    TkSoForth       shift and go to state 139
 
 
-state 131
+state 135
 
     (45) finish -> TkId TkOpenPar exp TkTwoPoints exp TkClosePar .
 
@@ -3756,7 +3832,7 @@ state 131
     TkRof           reduce using rule 45 (finish -> TkId TkOpenPar exp TkTwoPoints exp TkClosePar .)
 
 
-state 132
+state 136
 
     (43) modArray -> modArray TkOpenPar exp TkTwoPoints exp TkClosePar .
 
@@ -3770,83 +3846,30 @@ state 132
     TkRof           reduce using rule 43 (modArray -> modArray TkOpenPar exp TkTwoPoints exp TkClosePar .)
 
 
-state 133
-
-    (65) instFor -> TkFor TkId TkIn exp TkTo exp TkArrow . code TkRof
-    (18) code -> . instruction
-    (19) code -> . sequencing
-    (34) instruction -> . instPrint
-    (35) instruction -> . instAsig
-    (36) instruction -> . instSkip
-    (37) instruction -> . instBlock
-    (38) instruction -> . instFor
-    (39) instruction -> . instIf
-    (40) instruction -> . instDo
-    (20) sequencing -> . instruction TkSemicolon instruction
-    (21) sequencing -> . sequencing TkSemicolon instruction
-    (22) instPrint -> . TkPrint printAble
-    (23) instPrint -> . TkPrint instConcat
-    (31) instAsig -> . TkId TkAsig arrayIni
-    (32) instAsig -> . TkId TkAsig exp
-    (33) instAsig -> . TkId TkAsig modArray
-    (24) instSkip -> . TkSkip
-    (2) instBlock -> . TkOBlock declare TkCBlock
-    (3) instBlock -> . TkOBlock declare code TkCBlock
-    (4) instBlock -> . TkOBlock code TkCBlock
-    (65) instFor -> . TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
-    (66) instIf -> . TkIf guards TkFi
-    (67) instDo -> . TkDo guards TkOd
-
-    TkPrint         shift and go to state 16
-    TkId            shift and go to state 17
-    TkSkip          shift and go to state 18
-    TkOBlock        shift and go to state 3
-    TkFor           shift and go to state 19
-    TkIf            shift and go to state 20
-    TkDo            shift and go to state 21
-
-    code                           shift and go to state 137
-    instruction                    shift and go to state 7
-    sequencing                     shift and go to state 8
-    instPrint                      shift and go to state 9
-    instAsig                       shift and go to state 10
-    instSkip                       shift and go to state 11
-    instBlock                      shift and go to state 12
-    instFor                        shift and go to state 13
-    instIf                         shift and go to state 14
-    instDo                         shift and go to state 15
-
-state 134
+state 137
 
     (14) type -> TkArray TkOBracket TkNum TkSoForth TkNum . TkCBracket
 
-    TkCBracket      shift and go to state 138
+    TkCBracket      shift and go to state 140
 
 
-state 135
+state 138
 
     (16) type -> TkArray TkOBracket TkNum TkSoForth TkMinus . TkNum TkCBracket
 
-    TkNum           shift and go to state 139
+    TkNum           shift and go to state 141
 
 
-state 136
+state 139
 
     (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth . TkMinus TkNum TkCBracket
     (17) type -> TkArray TkOBracket TkMinus TkNum TkSoForth . TkNum TkCBracket
 
-    TkMinus         shift and go to state 140
-    TkNum           shift and go to state 141
+    TkMinus         shift and go to state 142
+    TkNum           shift and go to state 143
 
 
-state 137
-
-    (65) instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code . TkRof
-
-    TkRof           shift and go to state 142
-
-
-state 138
+state 140
 
     (14) type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .
 
@@ -3856,45 +3879,33 @@ state 138
     TkId            reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
     TkSkip          reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
     TkOBlock        reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
-    TkFor           reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
     TkIf            reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
     TkDo            reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
-
-
-state 139
-
-    (16) type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum . TkCBracket
-
-    TkCBracket      shift and go to state 143
-
-
-state 140
-
-    (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus . TkNum TkCBracket
-
-    TkNum           shift and go to state 144
+    TkFor           reduce using rule 14 (type -> TkArray TkOBracket TkNum TkSoForth TkNum TkCBracket .)
 
 
 state 141
 
-    (17) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum . TkCBracket
+    (16) type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum . TkCBracket
 
-    TkCBracket      shift and go to state 145
+    TkCBracket      shift and go to state 144
 
 
 state 142
 
-    (65) instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .
+    (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus . TkNum TkCBracket
 
-    TkSemicolon     reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
-    TkCBlock        reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
-    TkFi            reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
-    TkGuard         reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
-    TkOd            reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
-    TkRof           reduce using rule 65 (instFor -> TkFor TkId TkIn exp TkTo exp TkArrow code TkRof .)
+    TkNum           shift and go to state 145
 
 
 state 143
+
+    (17) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum . TkCBracket
+
+    TkCBracket      shift and go to state 146
+
+
+state 144
 
     (16) type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .
 
@@ -3904,19 +3915,19 @@ state 143
     TkId            reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkSkip          reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkOBlock        reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
-    TkFor           reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkIf            reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkDo            reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
-
-
-state 144
-
-    (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum . TkCBracket
-
-    TkCBracket      shift and go to state 146
+    TkFor           reduce using rule 16 (type -> TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket .)
 
 
 state 145
+
+    (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum . TkCBracket
+
+    TkCBracket      shift and go to state 147
+
+
+state 146
 
     (17) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .
 
@@ -3926,12 +3937,12 @@ state 145
     TkId            reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
     TkSkip          reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
     TkOBlock        reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
-    TkFor           reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
     TkIf            reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
     TkDo            reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
+    TkFor           reduce using rule 17 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket .)
 
 
-state 146
+state 147
 
     (15) type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .
 
@@ -3941,7 +3952,7 @@ state 146
     TkId            reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkSkip          reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkOBlock        reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
-    TkFor           reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkIf            reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
     TkDo            reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
+    TkFor           reduce using rule 15 (type -> TkArray TkOBracket TkMinus TkNum TkSoForth TkMinus TkNum TkCBracket .)
 

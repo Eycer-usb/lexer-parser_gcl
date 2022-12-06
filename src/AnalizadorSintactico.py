@@ -35,10 +35,10 @@ class analizadorSintactico:
         start = 'program'
         
         global symbolTables
+        global symbolTablesFor
+        
         symbolTables = []
-
-        # symbolTables[0] = Direccion a la tabla anterior
-        # symbolTables[1] = valor de la tabla actual
+        symbolTablesFor = []
 
         def p_program(p):
             '''
@@ -95,7 +95,6 @@ class analizadorSintactico:
 
             global symbolTables
             tabla = {}
-
             # Se agregan las nuevas declaraciones y se 
             # enmascara si es necesario
             for i in p[1]:
@@ -110,6 +109,9 @@ class analizadorSintactico:
             DeclaList : TkId TkComma DeclaList
                         | TkId
             '''
+            if p[1] in symbolTablesFor: 
+                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+
             if len(p) == 4:
                 p[0] = [p[1],*p[3]]
             else:
@@ -207,14 +209,14 @@ class analizadorSintactico:
                 instConcat : printAble TkConcat  printAble
                            | instConcat TkConcat printAble
             '''
-            p[0] = ["Concat", p[1], p[3]]
+            p[0] = nodito("Concat", [p[1], p[3]])
 
         # Sentencia Imprimible de Strings
         def p_printeAble1(p):
             '''
             printAble : TkString
             '''
-            p[0] = ["String", {p[1]}]
+            p[0] = noditoIdentificador("String", p[1], "String")
         
         # Sentencia Imprimible de Expresiones
         def p_printeAble2(p):
@@ -223,6 +225,7 @@ class analizadorSintactico:
             '''
             p[0] = p[1]
             
+        
         # Definicion de los Arrays
         def p_arrayIni(p):
             '''
@@ -248,10 +251,15 @@ class analizadorSintactico:
             '''
             #p[0] = ["Asig",["Ident",p[1]],p[3]]
             #print(symbolTables
+            # print('########################')
+            # print(symbolTablesFor)
+            # print(f"{p[1]}={p[3]}")
 
+            # print('########################')
+            if p[1] in symbolTablesFor: 
+                raise(Exception("Error variable dummy del for en WriteArray WIP"))
             for i in symbolTables:
                 if i.get(p[1]) != None:
-                    #print(p[3])
                     if "array" in i[p[1]] and p[3].type == 'int':
                         p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
                     elif i[p[1]] != p[3].type:
@@ -268,17 +276,28 @@ class analizadorSintactico:
                             | instAsig
                             | instSkip
                             | instBlock
-                            | instFor
                             | instIf
                             | instDo
             '''
             p[0] = p[1]
+        
+        def p_for(p):
+            '''
+            instruction : instFor
+            '''
+            
+            p[0] = p[1]
+            
+            symbolTablesFor.pop(0)
         
         # Caracterizacion de los arrays
         def p_consArray(p):
             '''
                 consArray : TkId TkOBracket exp TkCBracket
             '''
+            if p[1] in symbolTablesFor: 
+                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+            
             if p[3].type != "int": raise(Exception("Error con el tipo en la lectura de array WIP"))
 
             for i in symbolTables:
@@ -299,9 +318,9 @@ class analizadorSintactico:
                 consArray : modArray TkOBracket exp TkCBracket
             '''
             #p[0] = ["ReadArray", p[1], p[3]]
-            if p[3].type != "int": raise(Exception("Error con el tipo en la lectura de array WIP"))
+            if  p[3].type != "int" : raise(Exception("Error con el tipo en la lectura de array WIP"))
             
-            p[0] = noditoExpresion("ReadArray",[p[1], p[3]],p[1].type)
+            p[0] = noditoExpresion("ReadArray",[p[1], p[3]],"int")
         
         def p_modArray(p):
             '''
@@ -312,7 +331,7 @@ class analizadorSintactico:
             if len(p) == 2: 
                 p[0] = p[1]
             else:
-                if p[3].type != "int" and p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP"))         
+                if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP"))         
                 #p[0] = ["WriteArray",p[1], ["TwoPoints", p[3], p[5]]]
                 p[0] = noditoExpresion("WriteArray",[p[1], nodito("TwoPoints", [p[3], p[5]])],p[1].type)
                 
@@ -321,16 +340,23 @@ class analizadorSintactico:
             '''
                 finish : TkId TkOpenPar exp TkTwoPoints exp TkClosePar
             '''
-            if p[3].type != "int" and p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP")) 
-            #p[0] = ["WriteArray",["Ident", {p[1]}],["TwoPoints",p[3],p[5]]]
+            if p[1] in symbolTablesFor: 
+                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+            
+            if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP")) 
+                                   
+            if p[1] in symbolTablesFor: 
+                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+                
             for i in symbolTables:
                 if i.get(p[1])!= None:
                     if "array" in i[p[1]]:
-                        p[0] = noditoExpresion("WriteArray",[noditoIdentificador("Ident",p[1],i[p[1]]), nodito("TwoPoints", [p[3], p[5]])],"int")
+                        p[0] = noditoExpresion("WriteArray",[noditoIdentificador("Ident",p[1],i[p[1]]), nodito("TwoPoints", [p[3], p[5]])],i[p[1]])
+                        return
                     else:
                         raise(Exception("Error con el tipo del ID en WriteArray WIP"))
                 
-                raise(Exception("Error con el ID en WriteArray WIP"))
+                raise(Exception("Error con el ID en modificacion del array WIP"))
         
         # Gramatica de los Operadores Binarios
         def p_opBin(p):
@@ -452,7 +478,7 @@ class analizadorSintactico:
                 exp : TkId 
             '''        
             #p[0] = ["Ident",p[1]]
-            
+
             for i in symbolTables:
                 if i.get(p[1]) != None:
                     p[0] = noditoIdentificador("Ident",p[1],i[p[1]])
@@ -463,10 +489,26 @@ class analizadorSintactico:
         # Gramatica del bucle for
         def p_instFor(p):
             '''
-                instFor : TkFor TkId TkIn exp TkTo exp TkArrow code TkRof
+                instFor : TkFor range TkArrow code TkRof
             '''
-            p[0] = ["For",["In",["Ident",p[2]],["To", p[4], p[6]]],p[8]]
+            #p[0] = ["For",["In",["Ident",p[2]],["To", p[4], p[6]]],p[8]]
+            p[0] = nodito("For",[p[2],p[4]]) # WIP
         
+        def p_instForRange(p):
+            '''
+                range : TkId TkIn exp TkTo exp 
+            '''  
+            global symbolTablesFor
+
+            if len(symbolTablesFor) == 0 :
+                symbolTablesFor = [p[1]]
+            else:
+                symbolTablesFor = [p[1],*symbolTablesFor]
+            
+            if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en el in del for"))
+            
+            p[0] = nodito("In",[noditoIdentificador("Ident",p[1],"int"), nodito("To",[p[3],p[5]])])
+
         # Gramatica de la instruccion de seleccion if
         def p_instIf(p):
             '''
@@ -524,11 +566,6 @@ class analizadorSintactico:
             
         parser = yacc.yacc()
         return parser
-    
-    
-    
-    
-    
     
     # Se imprime el AST
     
