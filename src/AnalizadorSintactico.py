@@ -14,7 +14,7 @@ class analizadorSintactico:
         contenido = archivo.read()
         archivo.close()
         self.noLineas = sum(1 for line in open(nombre_archivo)) - 1
-        self.ast = parser.parse(contenido)
+        self.ast = parser.parse(contenido,tracking = True)
 
     # Se define el parser con su gramatica, precedencia y estructura
     def parser(self, tokens):
@@ -44,6 +44,7 @@ class analizadorSintactico:
             '''
                 program : instBlock 
             '''
+
             p[0] = p[1]
 
         # El programa vacio no es reconocido como valido
@@ -105,7 +106,7 @@ class analizadorSintactico:
             '''
             DeclaList : TkId TkComma DeclaList
                         | TkId
-            '''
+            '''            
             if p[1] in symbolTablesFor: 
                 self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
 
@@ -233,9 +234,9 @@ class analizadorSintactico:
                          | TkId TkAsig exp 
                          | TkId TkAsig modArray
             '''
-
             if p[1] in symbolTablesFor: 
                self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
+
             for i in symbolTables:
                 if i.get(p[1]) != None:
                     if "array" in i[p[1]] and p[3].type == 'int':
@@ -245,7 +246,8 @@ class analizadorSintactico:
                     else:
                         p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
                     return 
-            self.semantic_error(p, f'Undefined variable "{p[1]}"')            
+            
+            self.semantic_error(p, f'Undefined variable "{p[1]}"')     
         
         # Generalizacion de instrucciones
         def p_instruction(p):
@@ -553,8 +555,14 @@ class analizadorSintactico:
         self.ast.print(0)
 
     def semantic_error(self, p, message):
-        row = p.lexer.lineno
-        col = p.lexer.lexpos
+        row = p.lexer.lineno - self.noLineas-1 # Fila del Error
+        excedente_col = 0
+        with open(self.nombre_archivo, 'r') as f:
+            for line in range(row):
+                excedente_col += sum( 1 for char in f.readline() )
+        col = p.lexer.lexpos - excedente_col + 3 # Columna del error
+        #help(p.lexer)
+
         print( f'Error in row {row}, column {col}: ' + message)
         sys.exit()
     
