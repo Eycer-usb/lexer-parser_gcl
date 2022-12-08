@@ -1,10 +1,11 @@
 |[
     declare
         x, y, p : int;
+        v : bool;
         z : array[2..3]
     z := 1,2;
     x := 3+5;
-    x := z[y] + 1;
+    x := z[3] + v;
     y := z(1:2)[2];
     
     do ! (x == y) -->
@@ -14,7 +15,8 @@
     od;
 
     for i in 1 to 2 -->
-        x := 3;
+        i:= 3;
+
         print "hola" . x . "mundo"
     rof
 ]|

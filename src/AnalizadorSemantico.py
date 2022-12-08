@@ -1,3 +1,12 @@
+"""
+La clase nodito representa los nodos del AST
+tiene varias especializaciones para representar diversos
+tipos de nodos.
+A su vez incluye un metodo de impresion recursivo descendente sobre sus hijos
+y de este modo permite mostrar por la salida estandar
+los sumarboles dado un nodo raiz
+
+"""
 class nodito:
     def __init__(self, name, sons, father = None) -> None:
         self.name = name
@@ -60,4 +69,3 @@ class noditoComma(nodito):
         self.length = length
     def __str__(self) ->str:
         return f"{self.name} | type: {self.type} with length={self.length}"
-

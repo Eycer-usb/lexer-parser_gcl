@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-import re
+import sys
 from src.AnalizadorSemantico import *
 
 class analizadorSintactico: 
@@ -59,12 +59,10 @@ class analizadorSintactico:
             global symbolTables
 
             if len(p) == 5:
-                #p[0] = ["Block", p[2], p[3]]
                 p[0] = noditoBlock("Block",[p[2],p[3]])
                 p[0].sons[0].father = p[0]
                 p[0].sons[1].father = p[0]
             else:
-                #p[0] = ["Block",p[2]]
                 p[0] = noditoBlock("Block",[p[2]])
                 p[0].sons[0].father = p[0]
             
@@ -76,7 +74,6 @@ class analizadorSintactico:
                 declare : TkDeclare declaration
                         | TkDeclare seqDeclare
             '''
-            #p[0] = ["Declare",p[2]]
             
             global symbolTables
 
@@ -110,7 +107,7 @@ class analizadorSintactico:
                         | TkId
             '''
             if p[1] in symbolTablesFor: 
-                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+                self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
 
             if len(p) == 4:
                 p[0] = [p[1],*p[3]]
@@ -122,12 +119,10 @@ class analizadorSintactico:
             '''
                 seqDeclare : declaration TkSemicolon declaration
                            | seqDeclare TkSemicolon declaration
-            '''
-            #print([*p[1],*p[3]])
-            
+            '''            
             for i in p[3]:
                 if p[1].get(i)!= None:
-                    raise(Exception("error de sintaxis WIP"))
+                    self.semantic_error(p, "Error de sintaxis en la secuencia de declaraciones")
                 
                 p[1][i] = p[3][i]
 
@@ -144,17 +139,6 @@ class analizadorSintactico:
                      | TkArray TkOBracket TkNum TkSoForth TkMinus TkNum TkCBracket
                      | TkArray TkOBracket TkMinus TkNum TkSoForth TkNum TkCBracket
             '''
-            # if len(p) == 2:
-            #     p[0] = p[1]
-            # elif len(p) == 7:
-            #      p[0] = p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[5] + p[6]
-            # elif len(p) == 9:
-            #     p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: -" + p[7] + p[8]
-            # else:
-            #     if p[3] == "-":
-            #         p[0] =  p[1] + p[2] + "Literal: -" + p[4] + p[5] + "Literal: " + p[6] + p[7]
-            #     else:
-            #         p[0] =  p[1] + p[2] + "Literal: " + p[3] + p[4] + "Literal: " + p[6] + p[7]
 
             if len(p) == 2:
                 p[0] = p[1]
@@ -232,14 +216,14 @@ class analizadorSintactico:
                 arrayIni : exp TkComma exp
             ''' 
 
-            if p[1].type != p[3].type: raise(Exception("Error de tipo con el Array")) 
+            if p[1].type != p[3].type: self.semantic_error(p, 'Wrong type in array initialization')
             p[0] = noditoComma("Comma", sons= [p[1], p[3]],type = p[1].type, length = 2)
 
         def p_arrayIni2(p):
             """
                 arrayIni : arrayIni TkComma exp 
             """
-            if p[1].type != p[3].type: raise(Exception("Error de tipo con el Array"))
+            if p[1].type != p[3].type: self.semantic_error(p, 'Wrong type in array initialization')
             p[0] = noditoComma("Comma", sons= [p[1], p[3]],type =p[1].type, length = p[1].lenght + 1)
             
         # Instruccion de Asignacion
@@ -249,25 +233,19 @@ class analizadorSintactico:
                          | TkId TkAsig exp 
                          | TkId TkAsig modArray
             '''
-            #p[0] = ["Asig",["Ident",p[1]],p[3]]
-            #print(symbolTables
-            # print('########################')
-            # print(symbolTablesFor)
-            # print(f"{p[1]}={p[3]}")
 
-            # print('########################')
             if p[1] in symbolTablesFor: 
-                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+               self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
             for i in symbolTables:
                 if i.get(p[1]) != None:
                     if "array" in i[p[1]] and p[3].type == 'int':
                         p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
                     elif i[p[1]] != p[3].type:
-                        raise(Exception("Error de tipo WIP"))
+                        self.semantic_error(p, f'Try to assign a type {p[3].type} to a type {i[p[1]]}')
                     else:
                         p[0] = nodito("Asig",[noditoIdentificador("Ident", key = p[1], type =i[p[1]]), p[3]] ) 
                     return 
-            raise(Exception("Error en el ID WIP"))            
+            self.semantic_error(p, f'Undefined variable "{p[1]}"')            
         
         # Generalizacion de instrucciones
         def p_instruction(p):
@@ -296,20 +274,22 @@ class analizadorSintactico:
                 consArray : TkId TkOBracket exp TkCBracket
             '''
             if p[1] in symbolTablesFor: 
-                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+                self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
             
-            if p[3].type != "int": raise(Exception("Error con el tipo en la lectura de array WIP"))
+            if p[3].type != "int": self.semantic_error(p, (f'Incorrect type in accessor, "{p[3].key}", expected "int" but "' + 
+                f'{p[3].type}" given'))
 
             for i in symbolTables:
                 if i.get(p[1]) == None:
-                        raise(Exception("Error de tipo WIP"))
+                    self.semantic_error( p, f"variable \"{p[1]}\" is undefined")
                 else:
                     tipo = i[p[1]]
                     p[0] = noditoExpresion("ReadArray",[
                         noditoIdentificador("Ident", key = p[1] , type= tipo ), p[3]
                         ],"int") 
                 return 
-            raise(Exception("Error en el ID WIP")) 
+            self.semantic_error( p, f"variable \"{p[1]}\" is undefined")
+ 
         
             #p[0] = ["ReadArray",["Ident", {p[1]}], p[3]]
 
@@ -318,7 +298,8 @@ class analizadorSintactico:
                 consArray : modArray TkOBracket exp TkCBracket
             '''
             #p[0] = ["ReadArray", p[1], p[3]]
-            if  p[3].type != "int" : raise(Exception("Error con el tipo en la lectura de array WIP"))
+            if  p[3].type != "int" : self.semantic_error( p, f"Wrong type reading array")
+
             
             p[0] = noditoExpresion("ReadArray",[p[1], p[3]],"int")
         
@@ -331,7 +312,7 @@ class analizadorSintactico:
             if len(p) == 2: 
                 p[0] = p[1]
             else:
-                if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP"))         
+                if p[3].type != "int" or p[5].type != "int": self.semantic_error(p, 'Wrong type updating array')         
                 #p[0] = ["WriteArray",p[1], ["TwoPoints", p[3], p[5]]]
                 p[0] = noditoExpresion("WriteArray",[p[1], nodito("TwoPoints", [p[3], p[5]])],p[1].type)
                 
@@ -341,12 +322,12 @@ class analizadorSintactico:
                 finish : TkId TkOpenPar exp TkTwoPoints exp TkClosePar
             '''
             if p[1] in symbolTablesFor: 
-                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+                self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
             
-            if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en la modificacion de array WIP")) 
+            if p[3].type != "int" or p[5].type != "int": self.semantic_error(p, 'Wrong type updating array') 
                                    
             if p[1] in symbolTablesFor: 
-                raise(Exception("Error variable dummy del for en WriteArray WIP"))
+                self.semantic_error( p, f"It is changing the variable \"{p[1]}\", which is a control variable of a 'for' statement")
                 
             for i in symbolTables:
                 if i.get(p[1])!= None:
@@ -354,9 +335,9 @@ class analizadorSintactico:
                         p[0] = noditoExpresion("WriteArray",[noditoIdentificador("Ident",p[1],i[p[1]]), nodito("TwoPoints", [p[3], p[5]])],i[p[1]])
                         return
                     else:
-                        raise(Exception("Error con el tipo del ID en WriteArray WIP"))
+                        self.semantic_error(p, 'Wrong type of id updating array') 
                 
-                raise(Exception("Error con el ID en modificacion del array WIP"))
+                self.semantic_error(p, 'Wrong id updating array') 
         
         # Gramatica de los Operadores Binarios
         def p_opBin(p):
@@ -365,30 +346,31 @@ class analizadorSintactico:
                     | exp TkMinus exp
                     | exp TkMult exp
             '''
-            if p[1].type != "int" or p[3].type != "int": raise(Exception("Error con las expreciones de enteros"))
+            if p[1].type != "int" or p[3].type != "int": self.semantic_error(p, "Wrong integer operation")
             
             if p[2] == "+":
-                #p[0] = ["Minus",p[1],p[3]]
                 p[0] = noditoExpresion("Plus",[p[1],p[3]],"int")
+
             elif p[2] == "-":
-                #p[0] = ["Minus",p[1],p[3]]
                 p[0] = noditoExpresion("Minus",[p[1],p[3]],"int")
+
             elif p[2] == "*":
-                #p[0] = ["Mult",p[1],p[3]]
+                p[0] = ["Mult",p[1],p[3]]
                 p[0] = noditoExpresion("Mult",[p[1],p[3]],"int")
+
         
         def p_opBin2(p):
             '''
                 exp : exp TkAnd exp
                     | exp TkOr exp
             '''
-            if p[1].type != "bool" or p[3].type != "bool": raise(Exception("Error con las expreciones de booleanas"))
+            if p[1].type != "bool" or p[3].type != "bool": self.semantic_error(p, "Wrong boolean operation")
 
             if p[2] == "/\\":
-                #p[0] = ["And",p[1],p[3]]
+                
                 p[0] = noditoExpresion("And",[p[1],p[3]],"bool")
             elif p[2] == "\\/":
-                #p[0] = ["Or",p[1],p[3]]
+                
                 p[0] = noditoExpresion("Or",[p[1],p[3]],"bool")
         
         def p_opBin3(p):
@@ -398,33 +380,31 @@ class analizadorSintactico:
                     | exp TkGeq exp
                     | exp TkGreater exp
             '''
-            if p[1].type != "int" or p[3].type != "int": raise(Exception("Error con las comparaciones enteras"))
+            if p[1].type != "int" or p[3].type != "int": raise(self.semantic_error(p, f'Integer comparative operations is comparing {p[1].type} and {p[3].type}'))
             
             if p[2] == "<":
-                #p[0] = ["Less",p[1],p[3]]
                 p[0] = noditoExpresion("Less",[p[1],p[3]],"bool")
+                
             elif p[2] == "<=":
-                #p[0] = ["Leq",p[1],p[3]]
                 p[0] = noditoExpresion("Leq",[p[1],p[3]],"bool")
+                
             elif p[2] == ">=":
-                #p[0] = ["Geq",p[1],p[3]]
                 p[0] = noditoExpresion("Geq",[p[1],p[3]],"bool")
+                
             elif p[2] == ">":
-                #p[0] = ["Greater",p[1],p[3]]
                 p[0] = noditoExpresion("Greater",[p[1],p[3]],"bool")
+                
 
         def p_opBin4(p):
             '''
                 exp : exp TkEqual exp
                     | exp TkNEqual exp
             '''
-            if p[1].type != p[3].type: raise(Exception("Error en Equal o Not equal"))
+            if p[1].type != p[3].type: self.semantic_error(p, f'Comparing {p[1].type} and { p[3].type }')
 
             if p[2] == "==":
-                #p[0] = ["Equal",p[1],p[3]]
                 p[0] = noditoExpresion("Equal",[p[1],p[3]],"bool")
             elif p[2] == "!=":
-                #p[0] = ["NotEqual",p[1],p[3]]
                 p[0] = noditoExpresion("NotEqual",[p[1],p[3]],"bool")
 
         
@@ -436,9 +416,9 @@ class analizadorSintactico:
                     | consArray
             '''
             if len(p) == 3:
-                #p[0] = ["Not",p[2]]
+    
                 if p[2].type != "bool":
-                    raise(Exception("Error en Not WIP"))
+                    self.semantic_error(p, 'Not operator work only over boolean expresions') 
                     
                 p[0] = noditoExpresion("Not",[p[2]],"bool")
             elif len(p) == 4:
@@ -453,7 +433,7 @@ class analizadorSintactico:
             '''
             #p[0] = ["Minus", p[2]]
             if p[2].type != "int":
-                raise(Exception("Error en minus WIP"))
+                self.semantic_error(p, 'Minus operator only accept "int" as argument') 
 
             p[0] = noditoExpresion("Minus",[p[2]],"int")
             
@@ -461,7 +441,7 @@ class analizadorSintactico:
             '''
                 exp : TkNum
             '''
-            #p[0] = ["Literal", p[1]]
+            
             p[0] = noditoIdentificador("Literal",p[1],"int")
 
         def p_literales2(p):
@@ -469,7 +449,7 @@ class analizadorSintactico:
                 exp : TkTrue
                     | TkFalse
             '''
-            #p[0] = ["Literal", p[1]]
+            
             p[0] = noditoIdentificador("Literal", p[1], "bool")
         
         # Definicion de las estructuras de las variables (ids)
@@ -477,14 +457,14 @@ class analizadorSintactico:
             '''
                 exp : TkId 
             '''        
-            #p[0] = ["Ident",p[1]]
+            
 
             for i in symbolTables:
                 if i.get(p[1]) != None:
                     p[0] = noditoIdentificador("Ident",p[1],i[p[1]])
                     return
             
-            raise(Exception("Error en el ID WIP"))
+            self.semantic_error(p, f'Undefined varible {p[1]}')
         
         # Gramatica del bucle for
         def p_instFor(p):
@@ -505,7 +485,7 @@ class analizadorSintactico:
             else:
                 symbolTablesFor = [p[1],*symbolTablesFor]
             
-            if p[3].type != "int" or p[5].type != "int": raise(Exception("Error con el tipo en el in del for"))
+            if p[3].type != "int" or p[5].type != "int": self.semantic_error(p, 'Incorrect type in "range" of for instruction')
             
             p[0] = nodito("In",[noditoIdentificador("Ident",p[1],"int"), nodito("To",[p[3],p[5]])])
 
@@ -514,7 +494,7 @@ class analizadorSintactico:
             '''
                 instIf : TkIf guards TkFi
             '''
-            #p[0] = ["If", p[2]]
+            
             p[0] = nodito("If", [p[2]])
 
         # Gramatica del bucle do
@@ -522,7 +502,7 @@ class analizadorSintactico:
             '''
                 instDo : TkDo guards TkOd
             '''
-            #p[0] = ["Do", p[2]]
+            
             p[0] = nodito("Do", [p[2]])
 
         # Estructura de las Guardas de las instrucciones de seleccion y bucle
@@ -532,7 +512,7 @@ class analizadorSintactico:
                        | then
             '''
             if len(p) != 2: 
-                #p[0] = ["Guard", p[1], p[3]]
+                
                 p[0] = nodito("Guard", [p[1], p[3]])
             else:
                 p[0] = p[1]
@@ -571,49 +551,10 @@ class analizadorSintactico:
     
     def imprimir_ast(self):
         self.ast.print(0)
+
+    def semantic_error(self, p, message):
+        row = p.lexer.lineno
+        col = p.lexer.lexpos
+        print( f'Error in row {row}, column {col}: ' + message)
+        sys.exit()
     
-    # def  imprimir_ast(self):
-    #     print("#################### ORIGINAL #######################")
-    #     print(self.ast)
-    #     print("########################### EXTENDIDO ####################")
-    #     astExt = crear_ast_extendido(self.ast)
-    #     imprimir_ast_extendido(astExt.sons[0])
-        
-    # def  imprimir_ast(self):
-    #     self.imprimir_ast_rec(self.ast,0)
-    
-    # # Accion Recursiva de impresion sobre el AST
-    # def imprimir_ast_rec(self, ast, lvl):
-    #     if type(ast) != list:
-    #         print("-"*lvl +str(ast))
-    #     elif type(ast) == list:
-    #         i = 1
-    #         print("-"*lvl + str(ast[0]))
-    #         while i < len(ast):
-    #             self.imprimir_ast_rec(ast[i],lvl+1)
-    #             i += 1
-    #     else:
-    #         pass
-    #         #print("WIP")
-    
-    # # Retorna el AST asociado
-    # def obtener_ast(self):
-    #     return self.ast
-    
-    # # Se convierte el AST en String 
-    # def ast_to_string(self):
-    #     return self.ast_to_string_rec(self.ast,0)
-    
-    # # Accion recursiva de conversion a string sobre el AST
-    # def ast_to_string_rec(self,ast,lvl):
-    #     if type(ast) == str:
-    #         return "-"*lvl + ast
-    #     elif type(ast) == list:
-    #         i = 1
-    #         resultado = "-"*lvl + ast[0]
-    #         while i < len(ast):
-    #             resultado += "\n" + self.ast_to_string_rec(ast[i],lvl+1)
-    #             i += 1
-    #         return resultado
-    #     else:
-    #         print("WIP")
