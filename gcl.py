@@ -9,6 +9,7 @@ del archivo sea .gcl y que tenga permisos de lectura.
 
 from src.AnalizadorLexicoGCL import AnalizadorLexicoGCL
 from src.AnalizadorSintactico import analizadorSintactico
+from src.GCLtoPreApp import *
 import sys
 
 def main():
@@ -21,7 +22,9 @@ def main():
         lexer = AnalizadorLexicoGCL(sys.argv[1])
         if lexer.estatus == 0: 
             a = analizadorSintactico(sys.argv[1],lexer.tokens)
-            a.imprimir_ast()
+            print(a.traducir())
+            
+            #a.imprimir_ast()
             # archivo = open("salida.out","w")
             # archivo.write(a.ast_to_string())
             # archivo.close()

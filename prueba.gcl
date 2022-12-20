@@ -1,23 +1,10 @@
 |[
     declare
-        x, y, p : int;
-        v : bool;
-        z : array[2..3]
-    z := 1,2;
-    x := 3+5;
-    x := z[3] + v;
-    y := z(1:2)[2];
+        x : int;
+        y : bool
     
-    do ! (x == y) -->
-        x := x-3
-    [] x != y -->
-        print z
-    od;
-
-    for i in 1 to 2 -->
-        i:= 3;
-
-        print "hola" . x . "mundo"
-    rof
+    do x < 1 -->
+        x:=1
+    od
 ]|
 

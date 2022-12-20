@@ -31,12 +31,12 @@ class noditoBlock(nodito):
 class noditoDeclare(nodito):
     def __init__(self, name, sons, tabla, father=None) -> None:
         super().__init__(name, sons, father)
-        self.symbolTable = tabla.copy()
+        self.symbolTable = tabla[0].copy()
 
         # le agregamos al no de declaracion los nodos con los nombres
 
-        for key in self.symbolTable[0].keys():
-            type = self.symbolTable[0][key]
+        for key in self.symbolTable.keys():
+            type = self.symbolTable[key]
             self.sons.append( 
                 noditoIdentificador("variable", key, type, [], self)
                 )

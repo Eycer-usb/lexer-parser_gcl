@@ -1,6 +1,8 @@
 import ply.yacc as yacc
 import sys
 from src.AnalizadorSemantico import *
+from src.GCLtoPreApp import translate
+
 
 class analizadorSintactico: 
 
@@ -54,7 +56,6 @@ class analizadorSintactico:
             '''
             instBlock : TkOBlock declare TkCBlock
                       | TkOBlock declare code TkCBlock
-                      | TkOBlock code TkCBlock
             '''
 
             global symbolTables
@@ -68,6 +69,13 @@ class analizadorSintactico:
                 p[0].sons[0].father = p[0]
             
             symbolTables.pop(0)
+        
+        def p_instBlock2(p):
+            '''
+            instBlock : TkOBlock code TkCBlock
+            '''
+            p[0] = noditoBlock("Block",[p[2]])
+            p[0].sons[0].father = p[0]
 
         # Sentencia de Declaracion
         def p_declare(p):
@@ -121,6 +129,7 @@ class analizadorSintactico:
                 seqDeclare : declaration TkSemicolon declaration
                            | seqDeclare TkSemicolon declaration
             '''            
+
             for i in p[3]:
                 if p[1].get(i)!= None:
                     self.semantic_error(p, "Error de sintaxis en la secuencia de declaraciones")
@@ -225,7 +234,7 @@ class analizadorSintactico:
                 arrayIni : arrayIni TkComma exp 
             """
             if p[1].type != p[3].type: self.semantic_error(p, 'Wrong type in array initialization')
-            p[0] = noditoComma("Comma", sons= [p[1], p[3]],type =p[1].type, length = p[1].lenght + 1)
+            p[0] = noditoComma("Comma", sons= [p[1], p[3]],type =p[1].type, length = p[1].length + 1)
             
         # Instruccion de Asignacion
         def p_instAsig(p):
@@ -525,7 +534,11 @@ class analizadorSintactico:
                 then : exp TkArrow code
             '''
             #p[0] = ["Then", p[1],p[3]]
-            p[0] = nodito("Then", (p[1],p[3]))
+            
+            if p[1].type != "bool":
+                    self.semantic_error(p, 'Error with condiction')
+
+            p[0] = nodito("Then", [p[1],p[3]])
 
         def p_ignorados(p):
             '''
@@ -565,4 +578,7 @@ class analizadorSintactico:
 
         print( f'Error in row {row}, column {col}: ' + message)
         sys.exit()
+    
+    def traducir(self):
+        return translate(self.ast)
     
