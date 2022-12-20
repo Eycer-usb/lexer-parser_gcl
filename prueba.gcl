@@ -1,0 +1,9 @@
+|[
+declare
+x, y, p : int;
+v : bool;
+z : array[2..3]
+x := 1;
+x := 1
+x := 1
+]|
